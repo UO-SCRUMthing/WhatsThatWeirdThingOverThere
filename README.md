@@ -22,7 +22,7 @@ npm install
 
 The repo is missing the `adminSecrets.js` file with connection credentials to the mongoDB database hosted on mLab. The required file has to expose variables called `MONGO_USER_NAME` and `MONGO_PASSWORD`. 
 
-Create a file like:
+Create a file in the root directory like:
 ```
 exports.MONGO_USER_NAME = <username>;
 exports.MONGO_PASSWORD = <password>;
