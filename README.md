@@ -2,6 +2,8 @@
 
 ## To Install Node.js, npm, express, and all the packages required to run the server:
 
+Currently the server is from a [tutorial.](https://closebrace.com/tutorials/2017-03-02/the-dead-simple-step-by-step-guide-for-front-end-developers-to-getting-up-and-running-with-nodejs-express-and-mongodb)
+
 __Install Node.js 9 through package manager with apt as per [directions from the Node.js website](https://nodejs.org/en/download/package-manager/):__
 ```
 curl -sL https://deb.nodesource.com/setup_9.x | sudo -E bash -
