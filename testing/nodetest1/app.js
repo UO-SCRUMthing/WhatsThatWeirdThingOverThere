@@ -5,9 +5,11 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+var credentials = require(__dirname + '/adminSecrets');
+
 var mongo = require('mongodb');
 var monk = require('monk');
-var db = monk('localhost:27017/nodetest1');
+var db = monk('mongodb://' + credentials.MONGO_USER_NAME + ':' + credentials.MONGO_PASSWORD + '@ds131698.mlab.com:31698/scrumthing');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
