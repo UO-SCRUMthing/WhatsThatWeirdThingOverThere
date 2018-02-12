@@ -14,12 +14,13 @@ npm install -g express-generator
 ```
 
 __Install all the packages required for the server:__
-cd the root directory of the webpage with package.json and run
+
+cd to the root directory of the webpage where package.json is located and run
 ```
 npm install
 ```
 
-The repo is missing the adminSecrets.js file with connection credentials to the mongoDB database hosted on mLab. The required file has to expose variables called `MONGO_USER_NAME` and `MONGO_PASSWORD`. 
+The repo is missing the `adminSecrets.js` file with connection credentials to the mongoDB database hosted on mLab. The required file has to expose variables called `MONGO_USER_NAME` and `MONGO_PASSWORD`. 
 
 Create a file like:
 ```
