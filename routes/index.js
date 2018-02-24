@@ -44,4 +44,36 @@ router.post('/addpin', function(req, res) {
     });
 });
 
+// https://stackoverflow.com/questions/365826/calculate-distance-between-2-gps-coordinates
+function distance(lat1, lon1, lat2, lon2) {
+  var p = 0.017453292519943295;    // Math.PI / 180
+  var c = Math.cos;
+  var a = 0.5 - c((lat2 - lat1) * p)/2 + 
+          c(lat1 * p) * c(lat2 * p) * 
+          (1 - c((lon2 - lon1) * p))/2;
+
+  return 12742 * Math.asin(Math.sqrt(a)); // 2 * R * arcsin(sqrt(a)); R = 6371 km
+}
+
+function pull_documents(db, lat, long, dist) {
+        var collection = db.get('whatsThatWeirdThing');
+        collection.find({})
+
+}
+
+router.get('/api/wisps', function(req, res) {
+    var db = req.db;
+
+    var lat = req.query.lat;
+    var long = req.query.long;
+    var dist = req.query.d;
+    var deltatime = req.query.ts;
+
+    var document_object = pull_documents(db, lat, long, dist);
+    
+    do_stuff(document_object);
+    
+    res.status(200).json(document_object);
+})
+
 module.exports = router;
