@@ -59,51 +59,66 @@ router.get('/', function(req, res, next) {
 //     which will get a wisp by id number
 
 router.get('/api/wisps', function(req, res) {
-    res.contentType('application/json');
+    // response.contentType('application/json');
     var db = req.db;
-
-    var lat = req.query.lat;
-    var long = req.query.long;
-    var dist = req.query.d;
-    var deltatime = req.query.ts;
-    var id = req.query.id;
     var collection = db.get('whatsThatWeirdThing');
 
-    if (id == "") {
-        collection.find({},{},function(error, docs) {
-            if (error) {
-                res.send("There was a problem retreiving information from the database");
-            } else {
-                res.status(200).json(docs);
-            }
-        });     
-    } else {
-        collection.findOne({"id": id},{}, function(error, docs) {
-            if (error) {
-               res.send("There was a problem retreiving the WISP from the database"); 
-            } else {
-                res.status(200).json(docs);
-            }
-       }); 
-    }
+    // var lat = req.query.lat;
+    // var long = req.query.long;
+    // var dist = req.query.d;
+    // var deltatime = req.query.ts;
+    collection.find({},{},function(error, docs) {
+        if (error) {
+            res.send("There was a problem retreiving information from the database");
+        } else {
+            res.status(200).json(docs);
+        }
+    });     
 });
 
-router.post('/api/newwisp', function(req, res) {
+router.get('/api/wisp/:id', function(req, res){
     var db = req.db;
-    var new_wisp = {"id":uuidv4(), "title": req.body.title, "description": req.body.description, "loc":{"lon": req.body.lon, "lat": req.body.lat}, 
-                    "email": req.body.email, "photo":["<file path>"], "responses":[], "creation_date": new Date().getTime()};
-
     var collection = db.get('whatsThatWeirdThing');
-    collection.insert(new_wisp, function (err, doc) {
-        if (err) {
-            res.send("There was a problem adding the information to the database");
+
+    var id = req.params.id;
+    collection.findOne({"id": id},{}, function(error, docs) {
+        if (error) {
+            res.send("There was a problem retreiving the WISP from the database"); 
         } else {
-            res.write(new_wisp);
+            res.status(200).json(docs);
         }
     });
 });
 
-router.post('/api/wisp')
+router.post('/api/wisps', function(req, res) {
+    var db = req.db;
+    var collection = db.get('whatsThatWeirdThing');
+    var new_wisp = {"id":uuidv4(), "title": req.body.title, "description": req.body.description, "loc":{"lon": req.body.lon, "lat": req.body.lat}, 
+                    "email": req.body.email, "photo":["file/path/of/photo1"], "responses":[], "creation_date": new Date().getTime()};
+
+    collection.insert(new_wisp, function (err, doc) {
+        if (err) {
+            res.send("There was a problem adding the information to the database");
+        } else {
+            res.status(200).json(new_wisp);
+        }
+    });
+});
+
+router.post('/api/wisp/:id', function(req, res) {
+    var collection = req.db.get('whatsThatWeirdThing');
+    var id = req.params.id;
+
+    collection.updateOne({"id":id}, {$push: {"responses": req.body.message}});
+    collection.findOne({"id": id},{}, function(error, docs) {
+        if (error) {
+            res.send("There was a problem retreiving the WISP from the database"); 
+        } else {
+            res.status(200).json(docs);
+        }
+    });
+
+});
 
 module.exports = router;
 
