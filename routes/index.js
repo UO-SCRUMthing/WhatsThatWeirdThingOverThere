@@ -59,7 +59,7 @@ router.get('/', function(req, res, next) {
 //     which will get a wisp by id number
 
 router.get('/api/wisps', function(req, res) {
-    response.contentType('application/json');
+    res.contentType('application/json');
     var db = req.db;
 
     var lat = req.query.lat;
