@@ -60,7 +60,7 @@
                         displayWISP(wisp, vm.map, m);
                     },
                     function failure(response){
-                        //vm.alert("WISP not found");
+                        vm.alert("WISP not found");
                     });
                     */
                     
@@ -192,7 +192,7 @@
     angular.module('WTapp')
     .controller('WTcontroller', ['$scope', WTcontroller]);
     
-    function addWISPMarker($scope, coords){ 
+    function addWISPMarker($scope, coords, id){ 
         var marker = new google.maps.Marker({
             map: $scope.map,
             position: coords,
