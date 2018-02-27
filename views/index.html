@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <title>What's That</title>
+    <style>
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+    #view {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+      
+
+    </style>
+    <meta charset="utf-8">
+  </head>
+  
+  <body ng-app="WTapp">
+
+    <div id="view" ng-view></div>
+    
+    
+    <!-- angularjs -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+    <!--angular router -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-route.min.js"></script>
+    <!--google maps -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDGOTU9-IpAgPtUfS7CRi5i6h4L78seQdw"
+    ></script>
+    
+    
+    
+    <!--app.js -->
+    
+    <script src="js/WTapp.js"></script>
+    <script src="js/Response.js"></script>
+    <script src="js/WISP.js"></script>
+    <script src="js/WTcontroller.js"></script>
+
+    
+    
+  </body>
+</html>

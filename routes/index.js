@@ -5,7 +5,7 @@ const uuidv4 = require('uuid/v4');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: "What's That Weird Thing Over There?" });
+  res.render('index.html');
 });
 
 // // GET Userlist page. /
