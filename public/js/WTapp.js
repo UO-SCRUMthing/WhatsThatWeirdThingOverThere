@@ -6,7 +6,7 @@ var app = angular.module("WTapp", ['ngRoute'])
 function config($routeProvider){
   $routeProvider
   .when('/', {
-    templateUrl: 'js/view.html',
+    templateUrl: 'js/map.html',
     controller: 'WTcontroller',
     controllerAs: 'WTctrl'
   })

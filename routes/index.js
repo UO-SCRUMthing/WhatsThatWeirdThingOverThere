@@ -5,7 +5,7 @@ const uuidv4 = require('uuid/v4');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index.html');
+  res.render('index');
 });
 
 // return template 
