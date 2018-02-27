@@ -12,6 +12,9 @@ function isEmptyObject(obj) {
     return !Object.keys(obj).length;
 }
 
+// return template 
+// [{"id":"UUIDv4","title":"wisp title","loc":{"lon":0,"lat":0}}, {...}, {...}]
+
 // Route: Show nearby wisps
 router.get('/api/wisps', function(req, res) {
     var db = req.db;
@@ -63,7 +66,7 @@ router.get('/api/wisp/:id', function(req, res){
 router.post('/api/wisps', function(req, res) {
     var db = req.db;
     var collection = db.get('whatsThatWeirdThing');
-    var new_wisp = {"id":uuidv4(), "title": req.body.title, "description": req.body.description, "loc":{"lon": req.body.lon, "lat": req.body.lat}, 
+    var new_wisp = {"id": uuidv4(), "title": req.body.title, "description": req.body.description, "loc":{"lon": req.body.lon, "lat": req.body.lat}, 
                     "email": req.body.email, "photo":["file/path/of/photo1"], "responses":[], "creation_date": new Date().getTime()};
 
     collection.insert(new_wisp, function (err, doc) {
