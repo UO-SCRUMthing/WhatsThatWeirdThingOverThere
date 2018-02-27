@@ -8,10 +8,6 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: "What's That Weird Thing Over There?" });
 });
 
-function isEmptyObject(obj) {
-    return !Object.keys(obj).length;
-}
-
 // return template 
 // [{"id":"UUIDv4","title":"wisp title","loc":{"lon":0,"lat":0}}, {...}, {...}]
 
@@ -39,7 +35,7 @@ router.get('/api/wisps', function(req, res) {
 
 // WISP template
 // {"id":"UUIDv4","title":"wisp title","description":"desc of what was seen",
-//  "email":"user@wot.com","loc":{"lon":0,"lat":0},"photo":["file/path/of/photo1"],
+//  "email":"user@wot.com","loc":{"lon":0,"lat":0},"photos":["file/path/of/photo1"],
 //  "responses":["response1","response2","..."],"creation_date":"UNIX timestamp"}
 
 // Route: get wisp by id
@@ -52,11 +48,11 @@ router.get('/api/wisp/:id', function(req, res){
         if (error) {
             res.send("There was a problem retreiving the WISP from the database"); 
         } else {
-            if (!isEmptyObject(doc)) {
+            if (doc != null) {
                 delete doc._id
                 res.status(200).json(doc);
             } else {
-                res.status(404);
+                res.status(404).json();
             }
         }
     });
@@ -67,7 +63,7 @@ router.post('/api/wisps', function(req, res) {
     var db = req.db;
     var collection = db.get('whatsThatWeirdThing');
     var new_wisp = {"id": uuidv4(), "title": req.body.title, "description": req.body.description, "loc":{"lon": req.body.lon, "lat": req.body.lat}, 
-                    "email": req.body.email, "photo":["file/path/of/photo1"], "responses":[], "creation_date": new Date().getTime()};
+                    "email": req.body.email, "photos":["file/path/of/photo1"], "responses":[], "creation_date": new Date().getTime()};
 
     collection.insert(new_wisp, function (err, doc) {
         if (err) {
