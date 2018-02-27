@@ -63,7 +63,7 @@ router.post('/api/wisps', function(req, res) {
     var db = req.db;
     var collection = db.get('whatsThatWeirdThing');
     var new_wisp = {"id": uuidv4(), "title": req.body.title, "description": req.body.description, "loc":{"lon": req.body.lon, "lat": req.body.lat}, 
-                    "email": req.body.email, "photos":["file/path/of/photo1"], "responses":[], "creation_date": new Date().getTime()};
+                    "email": req.body.email, "photos":[], "responses":[], "creation_date": new Date().getTime()};
 
     collection.insert(new_wisp, function (err, doc) {
         if (err) {
@@ -80,11 +80,12 @@ router.post('/api/wisp/:id', function(req, res) {
     var id = req.params.id;
 
     collection.updateOne({"id":id}, {$push: {"responses": req.body.message}});
-    collection.findOne({"id": id},{}, function(error, docs) {
+    collection.findOne({"id": id},{}, function(error, doc) {
         if (error) {
             res.send("There was a problem retreiving the WISP from the database"); 
         } else {
-            res.status(200).json(docs);
+            delete doc._id
+            res.status(200).json(doc);
         }
     });
 
