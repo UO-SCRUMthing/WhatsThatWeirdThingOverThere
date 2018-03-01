@@ -1,3 +1,4 @@
+
 (function(){
     
     WTcontroller.$inject = ['$scope', '$http'];
@@ -20,10 +21,10 @@
         vm.count = 0;  //to be replaced when server provides WISP id
         vm.map;
         vm.coords = {lat: 0, lng: 0}; 
-        vm.initMap = function(coords){
+        vm.initMap = function(coords, zoom){
             vm.map = new google.maps.Map(document.getElementById('map'), {
                 center: coords,
-                zoom: 14,
+                zoom: zoom,
                 disableDoubleClickZoom: true
             });
             
@@ -48,30 +49,36 @@
                 
                 // create marker listener
                 m.addListener('click', function(e){
-                    //vm.marker = m;
-                    
+                    vm.marker = m;
+                    //wisp = vm.WISPlist[m.id];
                     
                     // get WISP data from server
-                    wisp = vm.WISPlist[m.id];
-                    /*
-                    $http.get("/wisp/:" + m.id)
+                    
+                    
+                    $http.get("/api/wisp/:" + m.id)
                     .then(function success(response){
                         wisp = JSON.parse(response);
-                        displayWISP(wisp, vm.map, m);
+                        vm.displayWISP(wisp, vm.map, m);
                     },
                     function failure(response){
-                        vm.alert("WISP not found");
+                        vm.warn("WISP not found");
                     });
-                    */
                     
                     
+                    //vm.displayWISP(wisp, vm.map, m);
+                    /*
                     vm.setDetails(vm, wisp);
                     vm.WISPdetails.open(vm.map, m);
                     document.getElementById('wisp-display').style = "display:block";
+                    */
                 });
                 
                 
             });
+        }
+        
+        vm.warn = function(message){
+            return
         }
         
         vm.clear = function(){
@@ -83,24 +90,24 @@
         }
         
         vm.setDetails = function(vm, wisp){
-            vm.title = wisp.details['title'];
-            vm.description = wisp.details['description'];
-            vm.photo = wisp.details['photo'];
-            vm.responses = wisp.details['responses'];
+            vm.title = wisp['title'];
+            vm.description = wisp['description'];
+            vm.photos = wisp['photos'];
+            vm.responses = wisp['responses'];
             vm.showResponseBox = false;
             vm.responseText = "";
             $scope.$digest();
         }
         
         vm.displayWISP = function(wisp, map, marker){
-            setDetails(vm, wisp);
+            vm.setDetails(vm, wisp);
             vm.WISPdetails.open(map, marker);
             document.getElementById('wisp-display').style = "display:block";
         }
         
         vm.createWisp = function(){
             pos = vm.marker.getPosition();
-            
+            /*
             var wisp = new WISP({
                 "title": vm.title,
                 "description": vm.description,
@@ -111,7 +118,7 @@
                     "lon": pos.lng()
                    },
                 "creation_date": ""
-            });
+            });*/
             
             var wisp = {
                 "title": vm.title,
@@ -122,22 +129,23 @@
             }
 
             
-            // 
-            /* Send WISP to server
-            http.post("/wisps", data)
+            
+             Send WISP to server
+            http.post("/api/wisps", data)
             .then(function(response){
                 wisp = JSON.parse(response);
                 vm.marker.id = wisp['id'];
-                displayWISP(wisp, vm.map, vm.marker);
+                vm.WISPcreate.close();
+                vm.displayWISP(wisp, vm.map, vm.marker);
             }, function(response){
                vm.alert("Unable to create wisp"); 
                 
             });
-            */
+            
             
             // add wisp to active list
-            vm.WISPlist[vm.marker.id] = wisp;
-            vm.WISPcreate.close();
+            //vm.WISPlist[vm.marker.id] = wisp;
+            //vm.WISPcreate.close();
 
         }
         
@@ -180,12 +188,12 @@
         navigator.geolocation 
         ? navigator.geolocation.getCurrentPosition(function(position){
             vm.coords = {lat: position.coords.latitude, lng: position.coords.longitude};
-            vm.initMap(vm.coords);
+            vm.initMap(vm.coords, 14);
         }, function(){
-            vm.initMap(vm.coords);;
+            vm.initMap({lat: 39, lng: -98.5}, 4);
         }) 
         : function(){
-            vm.initMap(vm.coords);;
+            vm.initMap({lat: 39, lng: -98.5}, 4);
         }();
 
     }
@@ -196,8 +204,7 @@
         var marker = new google.maps.Marker({
             map: $scope.map,
             position: coords,
-            title: String($scope.count),
-            id: id
+            title: String($scope.count)
         });
         return marker;
     }

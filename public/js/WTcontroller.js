@@ -1,6 +1,7 @@
+
 (function(){
     
-    WTcontroller.$inject = ['$scope', '$http'];
+    //WTcontroller.$inject = ['$scope', '$http'];
     function WTcontroller($scope, $http){
         var vm = this;
         
@@ -20,10 +21,10 @@
         vm.count = 0;  //to be replaced when server provides WISP id
         vm.map;
         vm.coords = {lat: 0, lng: 0}; 
-        vm.initMap = function(coords){
+        vm.initMap = function(coords, zoom){
             vm.map = new google.maps.Map(document.getElementById('map'), {
                 center: coords,
-                zoom: 14,
+                zoom: zoom,
                 disableDoubleClickZoom: true
             });
             
@@ -37,10 +38,37 @@
                 vm.marker.setMap(null);
             });
             
+            $http.get("/api/wisps")
+            .then(function(response){
+                var data = response.data;
+                for(var p in response.data){
+                    (function(){
+                        var mar = addWISPMarker(vm.map, {lat: data[p].loc.lat, lng: data[p].loc.lon});
+                    mar.id = data[p].id;
+                    mar.title = data[p].title;
+                    mar.addListener('click', function(e){
+                        vm.marker = mar;
+
+                        $http.get("/api/wisp/" + mar.id)
+                        .then(function success(response){
+                            wisp = response.data;
+                            vm.displayWISP(wisp, vm.map, mar);
+                        },
+                        function failure(response){
+                            console.log(response);
+                            vm.warn("WISP not found");
+                        });
+                    });
+                })();
+                }
+            }, function(response){
+                console.log("something went wrong");
+            });
+            
             // create double-click listener
             vm.map.addListener('dblclick', function(e){
 
-                var m = addWISPMarker(vm, e.latLng, vm.count++);  //TODO update to not take id
+                var m = addWISPMarker(vm.map, e.latLng);  
                 vm.marker = m;
                 vm.clear();
                 vm.WISPcreate.open(vm.map, m);
@@ -48,30 +76,27 @@
                 
                 // create marker listener
                 m.addListener('click', function(e){
-                    //vm.marker = m;
-                    
-                    
+                    vm.marker = m;
+
                     // get WISP data from server
-                    wisp = vm.WISPlist[m.id];
-                    /*
-                    $http.get("/wisp/:" + m.id)
+                    $http.get("/api/wisp/" + m.id)
                     .then(function success(response){
-                        wisp = JSON.parse(response);
-                        displayWISP(wisp, vm.map, m);
+                        wisp = response.data;
+                        vm.displayWISP(wisp, vm.map, m);
                     },
                     function failure(response){
-                        //vm.alert("WISP not found");
+                        console.log(response);
+                        vm.warn("WISP not found");
                     });
-                    */
-                    
-                    
-                    vm.setDetails(vm, wisp);
-                    vm.WISPdetails.open(vm.map, m);
-                    document.getElementById('wisp-display').style = "display:block";
+
                 });
                 
                 
             });
+        }
+        
+        vm.warn = function(message){
+            return
         }
         
         vm.clear = function(){
@@ -83,61 +108,43 @@
         }
         
         vm.setDetails = function(vm, wisp){
-            vm.title = wisp.details['title'];
-            vm.description = wisp.details['description'];
-            vm.photo = wisp.details['photo'];
-            vm.responses = wisp.details['responses'];
+            console.log(wisp);
+            vm.title = wisp['title'];
+            vm.description = wisp['description'];
+            vm.photos = wisp['photos'];
+            vm.responses = wisp['responses'];
             vm.showResponseBox = false;
             vm.responseText = "";
-            $scope.$digest();
+            //$scope.$digest();
         }
         
         vm.displayWISP = function(wisp, map, marker){
-            setDetails(vm, wisp);
+            vm.setDetails(vm, wisp);
             vm.WISPdetails.open(map, marker);
             document.getElementById('wisp-display').style = "display:block";
         }
         
         vm.createWisp = function(){
-            pos = vm.marker.getPosition();
-            
-            var wisp = new WISP({
-                "title": vm.title,
-                "description": vm.description,
-                "email": vm.email,
-                "photo": vm.photo,
-                "loc": {
-                    "lat": pos.lat(),
-                    "lon": pos.lng()
-                   },
-                "creation_date": ""
-            });
-            
+            pos = vm.marker.getPosition(); 
             var wisp = {
-                "title": vm.title,
-                "description": vm.description,
-                "email": vm.email,
-                "lat": pos.lat(),
-                "lon": pos.lng()   
-            }
+                title: vm.title,
+                description: vm.description,
+                email: vm.email,
+                lat: pos.lat(),
+                lon: pos.lng(),
+                photos: []
+            };
 
-            
-            // 
-            /* Send WISP to server
-            http.post("/wisps", data)
+            //Send WISP to server
+            $http.post("/api/wisps", wisp)
             .then(function(response){
-                wisp = JSON.parse(response);
+                wisp = response.data
                 vm.marker.id = wisp['id'];
-                displayWISP(wisp, vm.map, vm.marker);
+                vm.WISPcreate.close();
+                vm.displayWISP(wisp, vm.map, vm.marker);
             }, function(response){
-               vm.alert("Unable to create wisp"); 
-                
+               vm.warn("Unable to create wisp"); 
             });
-            */
-            
-            // add wisp to active list
-            vm.WISPlist[vm.marker.id] = wisp;
-            vm.WISPcreate.close();
 
         }
         
@@ -146,21 +153,15 @@
         }
         
         vm.submitResponse = function(){
-            vm.WISPlist[vm.marker.id].addResponse(vm.responseText);
-            
-            /* send request to server
-            $http.post("/api/wisp/:" + vim.marker.id, data)
+
+            $http.post("/api/wisp/" + vm.marker.id, {message: vm.responseText})
             .then(function(response){
                 wisp = JSON.parse(response);
                 displayWISP(wisp, vm.map, vm.marker);
-            }, function(){
-                
+            }, function(response){
+                console.log(response);
             });
             
-            */
-            
-            vm.responseText = "";
-            vm.showResponseBox = false;
         }
         
         vm.cancelResponse = function(){
@@ -180,24 +181,22 @@
         navigator.geolocation 
         ? navigator.geolocation.getCurrentPosition(function(position){
             vm.coords = {lat: position.coords.latitude, lng: position.coords.longitude};
-            vm.initMap(vm.coords);
+            vm.initMap(vm.coords, 14);
         }, function(){
-            vm.initMap(vm.coords);;
+            vm.initMap({lat: 39, lng: -98.5}, 4);
         }) 
         : function(){
-            vm.initMap(vm.coords);;
+            vm.initMap({lat: 39, lng: -98.5}, 4);
         }();
 
     }
     angular.module('WTapp')
-    .controller('WTcontroller', ['$scope', WTcontroller]);
+    .controller('WTcontroller', ['$scope', '$http', WTcontroller]);
     
-    function addWISPMarker($scope, coords, id){ 
+    function addWISPMarker(map, coords){ 
         var marker = new google.maps.Marker({
-            map: $scope.map,
-            position: coords,
-            title: String($scope.count),
-            id: id
+            map: map,
+            position: coords
         });
         return marker;
     }
