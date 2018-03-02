@@ -156,7 +156,7 @@
 
             $http.post("/api/wisp/" + vm.marker.id, {message: vm.responseText})
             .then(function(response){
-                wisp = JSON.parse(response);
+                wisp = response.data;
                 displayWISP(wisp, vm.map, vm.marker);
             }, function(response){
                 console.log(response);
