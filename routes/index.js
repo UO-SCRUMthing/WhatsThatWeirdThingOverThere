@@ -2,6 +2,16 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var router = express.Router();
 const uuidv4 = require('uuid/v4');
+var nodemailer = require('nodemailer');
+var credentials = require('../adminSecrets');
+
+var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'whatsthatweirdthing@gmail.com',
+        pass: credentials.GMAIL_PASSWORD
+    }
+});
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -34,6 +44,11 @@ router.get('/api/wisps', function(req, res) {
     });     
 });
 
+// WISP template
+// {"id":"UUIDv4","title":"wisp title","description":"desc of what was seen",
+//  "email":"user@wot.com","loc":{"lon":0,"lat":0},"photos":["file/path/of/photo1"],
+//  "responses":["response1","response2","..."],"creation_date":"UNIX timestamp"}
+
 // Route: get wisps by email
 router.get('/api/wisps/:email', function(req, res){
     var collection = req.db.get('whatsThatWeirdThing');
@@ -45,7 +60,7 @@ router.get('/api/wisps/:email', function(req, res){
         } else {
             if (wispsByEmail != null) {
                 for (var i = 0; i < wispsByEmail.length; i++) {
-                    delete wispsByEmailp[i]._id;
+                    delete wispsByEmail[i]._id;
                 }
                 res.status(200).json(wispsByEmail);
             } else {
@@ -54,11 +69,6 @@ router.get('/api/wisps/:email', function(req, res){
         }
     });
 });
-
-// WISP template
-// {"id":"UUIDv4","title":"wisp title","description":"desc of what was seen",
-//  "email":"user@wot.com","loc":{"lon":0,"lat":0},"photos":["file/path/of/photo1"],
-//  "responses":["response1","response2","..."],"creation_date":"UNIX timestamp"}
 
 // Route: get wisp by id
 router.get('/api/wisp/:id', function(req, res){
@@ -96,41 +106,49 @@ router.post('/api/wisps', function(req, res) {
     });
 });
 
+var mailOptions = {
+    from: 'whatsthatweirdthing@gmail.com',
+    to: null,
+    subject: "Your pin was just responded to for the first time!",
+    text: null
+};
+
 // Route: Respond to a wisp
 router.post('/api/wisp/:id', function(req, res) {
     var collection = req.db.get('whatsThatWeirdThing');
     var id = req.params.id;
 
-    collection.update({"id":id}, {$push: {"responses": req.body.message}});
+    // collection.update({"id":id}, {$push: {"responses": req.body.message}});
     collection.findOne({"id": id},{}, function(error, doc) {
         if (error) {
             res.ststus(500).json();
         } else {
-            delete doc._id
-            res.status(200).json(doc);
+            if (doc.responses.length == 0) {
+                mailOptions.text = req.body.message;
+                mailOptions.to = doc.email
+                if (mailOptions.to != null & mailOptions.text != null) {
+                    transporter.sendMail(mailOptions, function(error, info) {
+                        if (error) {
+                            console.log(error);
+                        } else {
+                            console.log('Email sent: ' + info.response);
+                        }
+                    });
+                }
+            } 
+            doc.responses.push(req.body.message);
+            collection.update({"id": doc.id}, {$set: {responses: doc.responses}}, function(error, count, status) {
+                if (error) {
+                    res.ststus(500).json();
+                } else {
+                    console.log("WISP " + doc.id + "responsed to! " + count + " " + status);
+                    delete doc._id; 
+                    res.status(200).json(doc);
+                }
+            });
         }
     });
 });
-
-// // Route: Respond to a wisp
-// router.post('/api/wisp/:id', function(req, res) {
-//     var collection = req.db.get('whatsThatWeirdThing');
-//     var id = req.params.id;
-
-//     // collection.update({"id":id}, {$push: {"responses": req.body.message}});
-//     collection.findOne({"id": id},{}, function(error, doc) {
-//         if (error) {
-//             res.ststus(500).json();
-//         } else {
-//             if (doc.responses.length != 0) {
-//                 doc.responses.push(req.body.message);
-//                 collection.save(doc);
-//             }
-//             delete doc._id;
-//             res.status(200).json(doc);
-//         }
-//     });
-// });
 
 // Route: Delete a wisp
 router.delete('/api/wisp/:id', function(req, res) {
