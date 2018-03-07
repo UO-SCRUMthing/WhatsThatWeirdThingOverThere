@@ -12,7 +12,6 @@ var monk = require('monk');
 var db = monk('mongodb://' + credentials.MONGO_USER_NAME + ':' + credentials.MONGO_PASSWORD + '@ds131698.mlab.com:31698/scrumthing');
 
 var index = require('./routes/index');
-// var users = require('./routes/users');
 
 var app = express();
 
