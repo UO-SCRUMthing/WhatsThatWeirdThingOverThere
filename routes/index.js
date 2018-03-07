@@ -118,7 +118,6 @@ router.post('/api/wisp/:id', function(req, res) {
     var collection = req.db.get('whatsThatWeirdThing');
     var id = req.params.id;
 
-    // collection.update({"id":id}, {$push: {"responses": req.body.message}});
     collection.findOne({"id": id},{}, function(error, doc) {
         if (error) {
             res.ststus(500).json();
