@@ -26,9 +26,12 @@ __Create a file in the root directory like:__
 ```
 exports.MONGO_USER_NAME = <username>;
 exports.MONGO_PASSWORD = <password>;
+exports.GMAIL_ADDRESS = <email address>;
+exports.GMAIL_PASSWORD = <password>;
 ```
 
-The server should now be able to be run by:
+The server can now be able to be run by:
 ```
-npm start
+sudo PORT=80 npm start
 ```
+This will create a server listening on port 80 (the traditional HTTP port) 
