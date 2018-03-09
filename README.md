@@ -1,6 +1,6 @@
 # WhatsThatWeirdThingOverThere
 
-## To Install Node.js, npm, express, and all the packages required to run the server:
+## To Install Node.js, npm, Express, and all the packages required to run the server:
 
 __Install Node.js 9 through package manager with apt as per [directions from the Node.js website](https://nodejs.org/en/download/package-manager/):__
 ```
