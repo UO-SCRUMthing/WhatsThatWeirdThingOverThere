@@ -1,0 +1,41 @@
+08-03-2018 04:01:38
+{"email": "thisisatest", "_id": {"$oid": "5aa0a4f2f7a1022e10e69a1a"}, "title": "test1", "responses": [], "creation_date": 1451606400000}
+{"responses": [], "title": "test1", "creation_date": 1451606400000, "email": "thisisatest", "_id": {"$oid": "5aa0a6d0f7a1022e24f9c026"}, "id": 10}
+{"responses": [], "title": "test2", "creation_date": 740232000000, "email": "thisisatest", "_id": {"$oid": "5aa0a6d0f7a1022e24f9c027"}, "id": 20}
+{"responses": [], "title": "test3", "creation_date": 1504648800000, "email": "thisisatest", "_id": {"$oid": "5aa0a6d1f7a1022e24f9c028"}, "id": 30}
+{"responses": [], "title": "test4", "creation_date": 1504828799999, "email": "thisisatest", "_id": {"$oid": "5aa0a6d1f7a1022e24f9c029"}, "id": 40}
+Num Docments Deleted: 5
+08-03-2018 04:02:11
+Num Docments Deleted: 0
+08-03-2018 04:07:57
+Num Documents Deleted: 0
+08-03-2018 04:08:13
+Num Documents Deleted: 0
+08-03-2018 04:12:20
+Num Documents Deleted: 0
+08-03-2018 04:13:23
+08-03-2018 04:14:05
+08-03-2018 15:41:16
+{"responses": [], "title": "test1", "creation_date": 1451606400000, "email": "thisisatest", "_id": {"$oid": "5aa0b863f7a1023171bb5e69"}, "id": 10}
+{"responses": [], "title": "test2", "creation_date": 740232000000, "email": "thisisatest", "_id": {"$oid": "5aa0b864f7a1023171bb5e6a"}, "id": 20}
+{"responses": [], "title": "test3", "creation_date": 1504648800000, "email": "thisisatest", "_id": {"$oid": "5aa0b864f7a1023171bb5e6b"}, "id": 30}
+{"responses": [], "title": "test4", "creation_date": 1504828799999, "email": "thisisatest", "_id": {"$oid": "5aa0b88df7a102317832338f"}, "id": 40}
+Num Documents Deleted: 4
+08-03-2018 16:48:52
+Num Documents Deleted: 0
+08-03-2018 16:49:01
+Num Documents Deleted: 0
+08-03-2018 17:04:01
+Num Documents Deleted: 0
+08-03-2018 17:05:01
+Num Documents Deleted: 0
+08-03-2018 17:06:01
+Num Documents Deleted: 0
+08-03-2018 17:07:01
+Num Documents Deleted: 0
+08-03-2018 17:08:01
+Num Documents Deleted: 0
+08-03-2018 17:30:55
+09-03-2018 00:00:01
+{"title": "thisIsATest", "description": "thisIsATest", "_id": {"$oid": "5aa1734ff7a10249746073ce"}, "responses": [], "creation_date": 1483228800000}
+Num Documents Deleted: 1
