@@ -1,0 +1,68 @@
+{{#with summary}}
+<h2>{{collection.name}}</h2>
+<h3>Summary</h3>
+    <ul>
+        {{#with stats}}
+        <li>Total assertions: {{assertions.total}}</li>
+        <li>Failed assertions: {{assertions.failed}}</li>
+        {{/with}}
+        <li>Total run duration: {{duration}}</li>
+        <li>Average response time: {{responseAverage}}</li>
+    </ul>
+{{/with}}
+
+<h3>Test Cases</h3>
+{{#each aggregations}}
+    {{> aggregations}}
+{{/each}}
+
+{{#*inline "aggregations"}}
+  {{#each executions}}
+    <table border="0" cellpadding="1" cellspacing="1">
+        <thead>
+            <tr>
+                <th colspan="3"><b>{{item.name}}</b></th>
+            </tr>
+	    </thead>
+        <tbody>
+            {{#with request}}
+            <tr>
+                <td>Description</td>
+                <td colspan="2">
+                <ul>
+                    {{#if description.content}}
+                    <li><i>{{description.content}}</i></li>
+                    {{/if}}
+                    <li>Method: {{method}}</li>
+                    <li>URL: {{url}}</li>
+            {{/with}}
+                    <li>Result: 
+                        <ul>
+                            <li> Passed: {{cumulativeTests.passed}} </li>
+                            <li> Failed: {{cumulativeTests.failed}} </li>
+                        </ul>
+                    </li>
+                </ul>
+                </td>
+            </tr>
+            {{#if assertions.length}}
+            <tr>
+                <td rowspan="{{assertions.length}}">Assertions</td>
+            {{#each assertions}}
+            {{#if @index}}
+            <tr>
+                <td>{{this.name}}</td>
+                <td>{{#if this.failed}}<span style="color:#000000;"><span style="background-color:#ff0000;">&nbsp;</span></span><span style="color:#ffffff;"><span style="background-color:#ff0000;">FAILED</span></span><span style="color:#000000;"><span style="background-color:#ff0000;">&nbsp;</span></span>{{else}}<span style="color:#000000;"><span style="background-color:#00ff00;">&nbsp;PASS&nbsp;</span></span>{{/if}}</td>
+            </tr>
+            {{else}}
+                <td>{{this.name}}</td>
+                <td>{{#if this.failed}}<span style="color:#000000;"><span style="background-color:#ff0000;">&nbsp;</span></span><span style="color:#ffffff;"><span style="background-color:#ff0000;">FAILED</span></span><span style="color:#000000;"><span style="background-color:#ff0000;">&nbsp;</span></span>{{else}}<span style="color:#000000;"><span style="background-color:#00ff00;">&nbsp;PASS&nbsp;</span></span>{{/if}}</td>
+            </tr>
+            {{/if}}
+            {{/each}}
+            {{/if}}
+        </tbody>
+    </table>
+    &nbsp;
+  {{/each}}
+{{/inline}}
