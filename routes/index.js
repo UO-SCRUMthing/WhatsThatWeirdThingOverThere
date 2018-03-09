@@ -34,7 +34,7 @@ router.get('/', function(req, res, next) {
   res.render('index');
 });
 
-// Route: Show nearby wisps
+// Route: Show -nearby- *all* wisps
 // example url: domain.com/api/wisps?lat=45.01&long=123.40&d=5.0&ts=1245073530000
 // return template 
 // [{"id":"UUIDv4","title":"wisp title","loc":{"lon":0,"lat":0}}, {...}, {...}]
@@ -87,8 +87,7 @@ router.get('/api/wisps/:email', function(req, res){
 
 // Route: get wisp by id
 router.get('/api/wisp/:id', function(req, res){
-    var db = req.db;
-    var collection = db.get('whatsThatWeirdThing');
+    var collection = req.db.get('whatsThatWeirdThing');
 
     var id = req.params.id;
     collection.findOne({"id": id},{}, function(error, doc) {
@@ -107,13 +106,18 @@ router.get('/api/wisp/:id', function(req, res){
 
 // Route: Create a wisp
 router.post('/api/wisps', function(req, res) {
-    var db = req.db;
-    var collection = db.get('whatsThatWeirdThing');
+    var collection = req.db.get('whatsThatWeirdThing');
+
+    if ((!req.body.title && !eq.body.description) || !req.body.email || !req.body.lon || !req.body.lat) {
+        res.status(400).json();
+        return;
+    }
 
     var id = uuidv4();
     // saveImage(req.body.image, imageDirectory + id);
-    var new_wisp = {"id": id, "title": req.body.title, "description": req.body.description, "loc":{"lon": req.body.lon, "lat": req.body.lat}, 
-                    "email": req.body.email, "photos":[], "responses":[], "creation_date": new Date().getTime()};
+    var new_wisp = {"id": id, "title": req.body.title, "description": req.body.description, 
+                    "loc":{"lon": req.body.lon, "lat": req.body.lat}, "email": req.body.email,
+                    "photos":[], "responses":[], "creation_date": new Date().getTime()};
 
     collection.insert(new_wisp, function (error, doc) {
         if (error) {
@@ -127,7 +131,7 @@ router.post('/api/wisps', function(req, res) {
 var mailOptions = {
     from: 'whatsthatweirdthing@gmail.com',
     to: null,
-    subject: "Your pin was just responded to for the first time!",
+    subject: null,
     text: null
 };
 
@@ -136,14 +140,20 @@ router.post('/api/wisp/:id', function(req, res) {
     var collection = req.db.get('whatsThatWeirdThing');
     var id = req.params.id;
 
+    if (!req.body.message) {
+        res.status(400).json();
+        return;
+    }
+
     collection.findOne({"id": id},{}, function(error, doc) {
         if (error) {
             res.ststus(500).json();
         } else {
             if (doc.responses.length == 0) {
-                mailOptions.text = req.body.message;
-                mailOptions.to = doc.email
-                if (mailOptions.to != null & mailOptions.text != null) {
+                mailOptions.text = "Message contents: \n" + req.body.message;
+                mailOptions.to = doc.email;
+                mailOptions.subject = "Your pin " + doc.title + " was just responded to for the first time!";
+                if (mailOptions.to && mailOptions.text) {
                     transporter.sendMail(mailOptions, function(error, info) {
                         if (error) {
                             console.log(error);
