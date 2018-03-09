@@ -5,13 +5,12 @@
 # for entries whose creation date is older than 6 months 
 # and has at least one entry.
 ####
-import pprint
 import sys
 import pymongo
 import datetime
 import time
 import calendar
-from bson.json_util import loads, dumps
+from bson.json_util import loads
 #Mongo Database
 from pymongo import MongoClient
 from datetime import date
