@@ -47,7 +47,7 @@ router.get('/', function(req, res, next) {
   res.render('index');
 });
 
-// Route: Show -nearby- *all* wisps
+// Route: Show *all* wisps
 // example url: domain.com/api/wisps?lat=45.01&long=123.40&d=5.0&ts=1245073530000
 // return template 
 // [{"id":"UUIDv4","title":"wisp title","loc":{"lon":0,"lat":0}}, {...}, {...}]
