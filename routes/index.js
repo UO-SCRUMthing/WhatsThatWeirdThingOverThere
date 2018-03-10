@@ -1,15 +1,17 @@
-var express = require('express');
-var bodyParser = require('body-parser');
-var router = express.Router();
+const express = require('express');
+const bodyParser = require('body-parser');
+const router = express.Router();
 
 const uuidv4 = require('uuid/v4');
-var nodemailer = require('nodemailer');
-var credentials = require('../adminSecrets');
-var fs = require('fs');
+const nodemailer = require('nodemailer');
+const credentials = require('../adminSecrets');
+const fs = require('fs');
+const os = require('os');
 
-var imageDirectory = "~/Images/";
+var imageDirectory = os.homedir() + "/Images/";
+!fs.existsSync(imageDirectory) && fs.mkdirSync(imageDirectory);
 
-var transporter = nodemailer.createTransport({
+const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
         user: credentials.GMAIL_ACCOUNT,
@@ -17,7 +19,7 @@ var transporter = nodemailer.createTransport({
     }
 });
 
-var mailOptions = {
+const mailOptions = {
     from: credentials.GMAIL_ACCOUNT,
     to: null,
     subject: null,
@@ -34,7 +36,10 @@ function saveImage(img, outputName) {
     // strip off the data: url prefix to get just the base64-encoded bytes
     var data = img.replace(/^data:image\/\w+;base64,/, "");
     var buf = new Buffer(data, 'base64');
-    fs.writeFile(outputName, buf);
+    fs.writeFile(outputName + ".png", buf, function(err) { 
+        if (err) throw err;
+        console.log("Saved!");
+    });
 }
 
 /* GET home page. */
@@ -54,7 +59,6 @@ router.get('/api/wisps', function(req, res) {
     var long = req.query.long;
     var dist = req.query.d;
     var deltatime = req.query.ts ? parseInt(req.query.ts) : 0;
-    console.log(deltatime);
 
     collection.find({"creation_date": {"$gte": deltatime}},{},function(error, docs) {
         if (error) {
@@ -124,10 +128,14 @@ router.post('/api/wisps', function(req, res) {
     }
 
     var id = uuidv4();
-    // saveImage(req.body.image, imageDirectory + id);
+    var photoPath = "";
+    if (req.body.image) {
+        saveImage(req.body.image, id);
+        photoPath = imageDirectory + id + ".png"; 
+    }
     var new_wisp = {"id": id, "title": req.body.title, "description": req.body.description, 
                     "loc":{"lon": req.body.lon, "lat": req.body.lat}, "email": req.body.email,
-                    "photos":[], "responses":[], "creation_date": new Date().getTime()};
+                    "photos":[photoPath], "responses":[], "creation_date": new Date().getTime()};
 
     collection.insert(new_wisp, function (error, doc) {
         if (error) {
