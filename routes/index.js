@@ -118,7 +118,7 @@ router.get('/api/wisp/:id', function(req, res){
 router.post('/api/wisps', function(req, res) {
     var collection = req.db.get('whatsThatWeirdThing');
 
-    if ((!req.body.title && !req.body.description) || !req.body.email || !req.body.lon || !req.body.lat) {
+    if ((!req.body.title && !req.body.description) || !req.body.email || req.body.lon == null || req.body.lat == null) {
         res.status(400).json();
         return;
     }
