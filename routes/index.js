@@ -161,7 +161,7 @@ router.post('/api/wisp/:id', function(req, res) {
             res.ststus(500).json();
         } else {
             if (doc.responses.length == 0) {
-                mailOptions.text = "Message contents: \n" + req.body.message;
+                mailOptions.text = "Greetings User,\nSomeone has responded to your request for information about " + doc.title + ". Go to your list of WISPs in What's That to see the response.\n-The What's That Team";
                 mailOptions.to = doc.email;
                 mailOptions.subject = "Your pin " + doc.title + " was just responded to for the first time!";
                 if (mailOptions.to && mailOptions.text) {
