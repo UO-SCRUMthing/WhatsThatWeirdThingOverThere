@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+  <meta charset="utf-8">
   <title>What's That</title>
     <style>
     html, body {
@@ -14,16 +15,58 @@
         flex-direction: column;
       }
       
+    #map-panel {
+        height: 100%;
+    }
+        
+      
+    #toolbar {
+        flex-basis: 40px;
+        background-color: #efefef;
+        z-index: 10;
+        border-bottom: 2px solid #0f0f0f
+    }
+    
+    img {
+        max-width:300px;
+        height:auto;
+    }
+    
+    .wisp-info-panel {
+        width: 440px;
+    }
+    
+    .wisp-description {
+        word-wrap: break-word;
+        border: 1px solid #666666;
+        display: inline-block;
+        min-height: 40px;
+        width: 400px
+    }
+    
+    .wisp-response-list {
+        padding-left: 0px;
+        margin-left: 0px;
+        list-style-type: none;
+    }
+    
+    .wisp-response {
+        
+        margin-left: 0px;
+        border-bottom: 1px solid #bbbbbb
+    }
+    
+    .wisp-response p {
+        max-width: 400px
+    }
+    
+    .response-box {
+        resize: none;
+        min-height: 40px;
+        width: 400px
+    }
 
     </style>
-    <meta charset="utf-8">
-  </head>
-  
-  <body ng-app="WTapp">
-
-    <div id="view" ng-view></div>
-    
-    
     <!-- angularjs -->
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
     <!--angular router -->
@@ -32,16 +75,16 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDGOTU9-IpAgPtUfS7CRi5i6h4L78seQdw"
     ></script>
     
-    
-    
     <!--app.js -->
     
-    <script src="js/WTapp.js"></script>
-    <script src="js/Response.js"></script>
-    <script src="js/WISP.js"></script>
-    <script src="js/WTcontroller.js"></script>
-
-    
-    
+    <script src="js/WTApp.js"></script>
+    <script src="js/clientService.js"></script>
+    <script src="js/dataModel.js"></script>
+    <script src="js/fileReader.js"></script>
+    <script src="js/WTController.js"></script>
+  </head>
+  
+  <body ng-app="WTApp">
+    <user-interface id="view"></user-interface>  
   </body>
 </html>

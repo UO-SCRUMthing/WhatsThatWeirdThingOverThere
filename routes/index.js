@@ -194,7 +194,7 @@ router.delete('/api/wisp/:id', function(req, res) {
     var collection = req.db.get('whatsThatWeirdThing');
     var id = req.params.id;
 
-    collection.delete({"id": id}, function(error, doc) {
+    collection.remove({"id": id}, function(error, doc) {
         if (error) {
             res.ststus(500).json();
         } else {

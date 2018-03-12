@@ -1,0 +1,40 @@
+<div id="toolbar" >
+<button ng-click="ctrl.print(exp)">parse</button>
+<input type="text" ng-model="exp">
+
+<button ng-click="ctrl.filterWISPs(filter); ctrl.filter=true" style="float:right">Search</button>
+<input type="text" ng-model="filter" style="float:right" placeholder="Search by email">
+<button ng-if="ctrl.filter" ng-click="ctrl.clearFilter(); ctrl.filter=false;" style="float:right">Clear filter</button>
+
+</div>
+<div id="map-panel"></div>
+
+<div id="wisp-template" style="display:none">
+<label>Title: </label> <input type="text" ng-model="ctrl.newWisp.title"> <br>
+<label>Description:</label><br>
+<textarea ng-model="ctrl.newWisp.description" style="resize:none"></textarea><br>
+<label>Select a photo:</label><br>
+<input type="file" ng-model="ctrl.newWisp.img" id="img-file"><br>
+<label>Email: </label> <input type="text" ng-model="ctrl.newWisp.email"> <br>
+<input type="checkbox" ng-model="ctrl.saveEmail"><label>Remember email</label><br>
+<button ng-click="ctrl.createWISP()">Create</button> 
+</div>
+
+<div id="wisp-display" style="display:none">
+<label class="wisp-title">{{ctrl.displayWISP.title}}</label>
+<button ng-if="ctrl.displayWISP.email == ctrl.email" class="delete-wisp-btn" ng-click="ctrl.deleteWISP()" style="float:right">Delete</button><br>
+<span class="wisp-description">{{ctrl.displayWISP.description}}</span><br>
+<img src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUA
+AAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO
+    9TXL0Y4OHwAAAABJRU5ErkJggg==" class="wisp-img"><br>
+<label>Responses</label><br>
+<ul class="wisp-response-list">
+    <li class="wisp-response" ng-repeat="r in ctrl.displayWISP.responses track by $index"><p>{{r}}</p></li>
+</ul>
+<div ng-if="ctrl.response.showBox">
+    <textarea class="response-box" ng-model="ctrl.response.responseText"></textarea><br>
+    <button ng-click="ctrl.submitResponse(); ctrl.response.showBow = false;">Submit</button>
+    <button ng-click="ctrl.response.showBox = false; ctrl.response.responseText = '';">Cancel</button>
+</div>
+<button ng-if="!ctrl.response.showBox" ng-click="ctrl.response.showBox = true">Add response</button>
+</div>
