@@ -34,13 +34,16 @@ const mailOptions = {
 // adapted from https://gist.github.com/madhums/e749dca107e26d72b64d
 function saveImage(img, outputName) {
     // strip off the data: url prefix to get just the base64-encoded bytes
+    var reg = /\/(\w+);/;
+    var match = reg.exec(img);
+    var extension = "." + match[1];
     var data = img.replace(/^data:image\/\w+;base64,/, "");
     var buf = new Buffer(data, 'base64');
-    fs.writeFile(outputName + ".png", buf, function(err) { 
+    fs.writeFile(imageDirectory + outputName + extension, buf, function(err) { 
         if (err) throw err;
         console.log("Saved!");
     });
-}
+    return imageDirectory + outputName + extension;
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -55,9 +58,9 @@ router.get('/api/wisps', function(req, res) {
     var db = req.db;
     var collection = db.get('whatsThatWeirdThing');
 
-    var lat = req.query.lat;
-    var long = req.query.long;
-    var dist = req.query.d;
+    // var lat = req.query.lat;
+    // var long = req.query.long;
+    // var dist = req.query.d;
     var deltatime = req.query.ts ? parseInt(req.query.ts) : 0;
 
     collection.find({"creation_date": {"$gte": deltatime}},{},function(error, docs) {
@@ -121,21 +124,24 @@ router.get('/api/wisp/:id', function(req, res){
 // Route: Create a wisp
 router.post('/api/wisps', function(req, res) {
     var collection = req.db.get('whatsThatWeirdThing');
+    var reg = /\w+@\w+\.\w+/;
 
     if ((!req.body.title && !req.body.description) || !req.body.email || req.body.lon == null || req.body.lat == null) {
+        res.status(400).json();
+        return;
+    } else if (req.body.title.length > 160 || req.body.description.length > 2000 || !reg.test()) {
         res.status(400).json();
         return;
     }
 
     var id = uuidv4();
-    var photoPath = "";
+    var fullPhotoPath = "";
     if (req.body.image) {
-        saveImage(req.body.image, id);
-        photoPath = imageDirectory + id + ".png"; 
+        fullPhotoPath = saveImage(req.body.image, id); 
     }
     var new_wisp = {"id": id, "title": req.body.title, "description": req.body.description, 
                     "loc":{"lon": req.body.lon, "lat": req.body.lat}, "email": req.body.email,
-                    "photos":[photoPath], "responses":[], "creation_date": new Date().getTime()};
+                    "photos":[fullPhotoPath], "responses":[], "creation_date": new Date().getTime()};
 
     collection.insert(new_wisp, function (error, doc) {
         if (error) {
@@ -152,6 +158,9 @@ router.post('/api/wisp/:id', function(req, res) {
     var id = req.params.id;
 
     if (!req.body.message) {
+        res.status(400).json();
+        return;
+    } else if (req.body.message > 1500 || req.body.message < 10) {
         res.status(400).json();
         return;
     }
