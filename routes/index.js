@@ -45,71 +45,47 @@ function saveImage(img, outputName) {
     });
     return imageDirectory + outputName + extension;
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index');
-});
-
-// Route: Show *all* wisps
-// example url: domain.com/api/wisps?lat=45.01&long=123.40&d=5.0&ts=1245073530000
-// return template 
-// [{"id":"UUIDv4","title":"wisp title","loc":{"lon":0,"lat":0}}, {...}, {...}]
-router.get('/api/wisps', function(req, res) {
-    var db = req.db;
+function getWisps(db, deltatime) {
     var collection = db.get('whatsThatWeirdThing');
 
-    // var lat = req.query.lat;
-    // var long = req.query.long;
-    // var dist = req.query.d;
-    var deltatime = req.query.ts ? parseInt(req.query.ts) : 0;
-
-    collection.find({"creation_date": {"$gte": deltatime}},{},function(error, docs) {
+    collection.find({"creation_date": {"$gte": deltatime}}, {}, function(error, docs) {
         if (error) {
-            res.ststus(500).json();
+            return {status: 500, wisps: []};
         } else {
             var wispLocations = [];
             for (var i = 0; i < docs.length; i++) {
-                wispLocations[i] = {"id": docs[i].id, "title": docs[i].title, "loc": docs[i].loc}
+                wispLocations[i] = {"id": docs[i].id, "title": docs[i].title, "loc": docs[i].loc};
             }
-            res.status(200).json(wispLocations);
+            return {status: 200, wisps: wispLocations};
         }
-    });     
-});
+    }); 
+}
 
-// WISP template
-// {"id":"UUIDv4","title":"wisp title","description":"desc of what was seen",
-//  "email":"user@wot.com","loc":{"lon":0,"lat":0},"photos":["file/path/of/photo1"],
-//  "responses":["response1","response2","..."],"creation_date":"UNIX timestamp"}
-
-// Route: get wisps by email
-router.get('/api/wisps/:email', function(req, res){
-    var collection = req.db.get('whatsThatWeirdThing');
-    var email = req.params.email;
-
-    collection.find({"email": email},{}, function(error, wispsByEmail) {
+function wispsByEmail(db, email) {
+    var collection = db.get('whatsThatWeirdThing');
+    collection.find({"email": email},{}, function(error, docs) {
         if (error) {
-            res.ststus(500).json(); 
+            return {status: 500, wisps: []]};
         } else {
-            if (wispsByEmail != null) {
-                for (var i = 0; i < wispsByEmail.length; i++) {
-                    delete wispsByEmail[i]._id;
+            if (docs != null) {
+                var wispsEmails = [];
+                for (var i = 0; i < docs.length; i++) {
+                    wispsEmails[i] = {"id": docs[i].id, "title": docs[i].title, "loc": docs[i].loc};
                 }
-                res.status(200).json(wispsByEmail);
+                return {status: 200, wisps: wispsEmails};
             } else {
-                res.status(404).json();
+                return {status: 404, wisps: []};
             }
         }
     });
-});
+}
 
-// Route: get wisp by id
-router.get('/api/wisp/:id', function(req, res){
-    var collection = req.db.get('whatsThatWeirdThing');
+function wispById(db, id) {
+    var collection = db.get('whatsThatWeirdThing');
 
-    var id = req.params.id;
     collection.findOne({"id": id},{}, function(error, doc) {
         if (error) {
-            res.ststus(500).json(); 
+            return {status: 500, wisps: {}};
         } else {
             if (doc != null) {
                 delete doc._id
@@ -118,61 +94,55 @@ router.get('/api/wisp/:id', function(req, res){
                         doc.photos[i] = fs.readFileSync(doc.photos[i], 'base64');
                     }
                 }
-                res.status(200).json(doc);
+                return {status: 200, wisp: doc};
             } else {
-                res.status(404).json();
+                return {status: 404, wisp: {}};
             }
         }
     });
-});
+}
 
-// Route: Create a wisp
-router.post('/api/wisps', function(req, res) {
-    var collection = req.db.get('whatsThatWeirdThing');
-    var reg = /\w+@\w+\.\w+/;
+function createWisp(db, body) {
+    var collection = db.get('whatsThatWeirdThing');
+    var regEmail = /\w+@\w+\.\w+/;
 
-    if ((!req.body.title && !req.body.description) || !req.body.email || req.body.lon == null || req.body.lat == null) {
-        res.status(400).json();
-        return;
-    } else if (req.body.title.length > 160 || req.body.description.length > 2000 || !reg.test()) {
-        res.status(400).json();
-        return;
+    if ((!body.title && !body.description) || !body.email || body.lon == null || body.lat == null) {
+        return {status: 400, wisp: {}};
+    } else if (body.title.length > 160 || body.description.length > 2000 || !regEmail.test()) {
+        return {status: 400, wisp: {}};
     }
 
     var id = uuidv4();
     var fullPhotoPath = "";
-    if (req.body.image) {
-        fullPhotoPath = saveImage(req.body.image, id); 
+    if (body.image) {
+        fullPhotoPath = saveImage(body.image, id); 
     }
-    var new_wisp = {"id": id, "title": req.body.title, "description": req.body.description, 
-                    "loc":{"lon": req.body.lon, "lat": req.body.lat}, "email": req.body.email,
+    var new_wisp = {"id": id, "title": body.title, "description": body.description, 
+                    "loc":{"lon": body.lon, "lat": body.lat}, "email": body.email,
                     "photos":[fullPhotoPath], "responses":[], "creation_date": new Date().getTime()};
 
     collection.insert(new_wisp, function (error, doc) {
         if (error) {
-            res.ststus(500).json();
+            return {status: 500, wisp: {}};
         } else {
-            res.status(200).json(new_wisp);
+            return {status: 200, wisp: new_wisp};
         }
     });
-});
+}
 
-// Route: Respond to a wisp
-router.post('/api/wisp/:id', function(req, res) {
-    var collection = req.db.get('whatsThatWeirdThing');
-    var id = req.params.id;
+function respondToWisp(db, body) {
+    var collection = db.get('whatsThatWeirdThing');
+    var id = params.id;
 
-    if (!req.body.message) {
-        res.status(400).json();
-        return;
-    } else if (req.body.message > 1500 || req.body.message < 10) {
-        res.status(400).json();
-        return;
+    if (!body.message) {
+        return {status: 400, wisp: {}};
+    } else if (body.message > 1500 || body.message < 10) {
+        return {status: 400, wisp: {}};
     }
 
     collection.findOne({"id": id},{}, function(error, doc) {
         if (error) {
-            res.ststus(500).json();
+            return {status: 500, wisp: {}};
         } else {
             if (doc.responses.length == 0) {
                 mailOptions.text = "Greetings User,\nSomeone has responded to your request for information about " + doc.title + ". Go to your list of WISPs in What's That to see the response.\n-The What's That Team";
@@ -183,38 +153,90 @@ router.post('/api/wisp/:id', function(req, res) {
                         if (error) {
                             console.log(error);
                         } else {
-                            console.log('Email sent: ' + info.response);
+                            // console.log('Email sent: ' + info.response);
                         }
                     });
                 }
             } 
 
-            doc.responses.push(req.body.message);
+            doc.responses.push(body.message);
             collection.update({"id": doc.id}, {$set: {"responses": doc.responses}}, function(error, count, status) {
                 if (error) {
-                    res.ststus(500).json();
+                    return {status: 500, wisp: {}};
                 } else {
-                    console.log("WISP " + doc.id + "responsed to! " + count + " " + status);
+                    // console.log("WISP " + doc.id + "responsed to! " + count + " " + status);
                     delete doc._id; 
-                    res.status(200).json(doc);
+                    return {status: 200, wisp: doc};
                 }
             });
         }
     });
-});
+}
 
-// Route: Delete a wisp
-router.delete('/api/wisp/:id', function(req, res) {
-    var collection = req.db.get('whatsThatWeirdThing');
-    var id = req.params.id;
+function deleteWisp(db, id) {
+    var collection = db.get('whatsThatWeirdThing');
 
     collection.remove({"id": id}, function(error, doc) {
         if (error) {
-            res.ststus(500).json();
+            res.status(500).json();
         } else {
             res.status(200).json();
         }
     });
+}
+
+/* GET home page. */
+router.get('/', function(req, res, next) {
+  res.render('index');
+});
+
+// Route: Show *all* wisps
+// example url: domain.com/api/wisps?lat=45.01&long=123.40&d=5.0&ts=1245073530000
+// return template 
+// [{"id":"UUIDv4","title":"wisp title","loc":{"lon":0,"lat":0}}, {...}, {...}]
+router.get('/api/wisps', function(req, res) {
+    // var lat = req.query.lat;
+    // var long = req.query.long;
+    // var dist = req.query.d;
+    var deltatime = req.query.ts ? parseInt(req.query.ts) : 0;
+
+    var response = getWisps(req.db, deltatime);
+    res.status(response.status).json(response.wisps);    
+});
+
+// WISP template
+// {"id":"UUIDv4","title":"wisp title","description":"desc of what was seen",
+//  "email":"user@wot.com","loc":{"lon":0,"lat":0},"photos":["file/path/of/photo1"],
+//  "responses":["response1","response2","..."],"creation_date":"UNIX timestamp"}
+
+// Route: get wisps by email
+router.get('/api/wisps/:email', function(req, res){
+    var response = wispsByEmail(req.db, req.params.email);
+    res.status(response.status).json(response.wisps); 
+});
+
+// Route: get wisp by id
+router.get('/api/wisp/:id', function(req, res){
+    var response = wispById(req.db, req.params.id);
+    res.status(response.status).json(response.wisp); 
+});
+
+// Route: Create a wisp
+router.post('/api/wisps', function(req, res) {
+    var response = createWisp(req.db, req.body);
+    res.status(response.status).json(response.wisp); 
+});
+
+// Route: Respond to a wisp
+router.post('/api/wisp/:id', function(req, res) {
+    var response = respondToWisp(req.db, req.body);
+    res.status(response.status).json(response.wisp);
+});
+
+// Route: Delete a wisp
+router.delete('/api/wisp/:id', function(req, res) {
+    var response = respondToWisp(req.db, req.params.id);
+    res.status(response.status).json();
 });
 
 module.exports = router;
