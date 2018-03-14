@@ -2,12 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const router = express.Router();
 
-const fs = require('fs');
-const os = require('os');
-const dbm = require('../dbmModule');
-
-var imageDirectory = os.homedir() + "/Images/";
-!fs.existsSync(imageDirectory) && fs.mkdirSync(imageDirectory);
+const dbm = require('../managementModule');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
