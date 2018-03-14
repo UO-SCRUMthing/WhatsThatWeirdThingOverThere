@@ -113,6 +113,11 @@ router.get('/api/wisp/:id', function(req, res){
         } else {
             if (doc != null) {
                 delete doc._id
+                if (doc.photos[0]) {
+                    for (var i = 0; i < doc.photos.length; i++) {
+                        doc.photos[i] = fs.readFileSync(doc.photos[i], 'base64');
+                    }
+                }
                 res.status(200).json(doc);
             } else {
                 res.status(404).json();
