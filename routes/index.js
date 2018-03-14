@@ -19,8 +19,8 @@ router.get('/api/wisps', function(req, res) {
     // var dist = req.query.d;
     var deltatime = req.query.ts ? parseInt(req.query.ts) : 0;
 
-    var response = dbm.getWisps(req.db, deltatime);
-    res.status(response.status).json(response.wisps);    
+    var response = dbm.getWisps(req.db, deltatime, res);
+    // res.status(response.status).json(response.wisps);    
 });
 
 // WISP template
@@ -30,32 +30,32 @@ router.get('/api/wisps', function(req, res) {
 
 // Route: get wisps by email
 router.get('/api/wisps/:email', function(req, res){
-    var response = dbm.wispsByEmail(req.db, req.params.email);
-    res.status(response.status).json(response.wisps); 
+    var response = dbm.wispsByEmail(req.db, req.params.email, res);
+    // res.status(response.status).json(response.wisps); 
 });
 
 // Route: get wisp by id
 router.get('/api/wisp/:id', function(req, res){
-    var response = dbm.wispById(req.db, req.params.id);
-    res.status(response.status).json(response.wisp); 
+    var response = dbm.wispById(req.db, req.params.id, res);
+    // res.status(response.status).json(response.wisp); 
 });
 
 // Route: Create a wisp
 router.post('/api/wisps', function(req, res) {
-    var response = dbm.createWisp(req.db, req.body);
-    res.status(response.status).json(response.wisp); 
+    var response = dbm.createWisp(req.db, req.body, res);
+    // res.status(response.status).json(response.wisp); 
 });
 
 // Route: Respond to a wisp
 router.post('/api/wisp/:id', function(req, res) {
-    var response = dbm.respondToWisp(req.db, req.body);
-    res.status(response.status).json(response.wisp);
+    var response = dbm.respondToWisp(req.db, req.body, res);
+    // res.status(response.status).json(response.wisp);
 });
 
 // Route: Delete a wisp
 router.delete('/api/wisp/:id', function(req, res) {
-    var response = dbm.respondToWisp(req.db, req.params.id);
-    res.status(response.status).json();
+    var response = dbm.deleteWisp(req.db, req.params.id, res);
+    // res.status(response.status).json();
 });
 
 module.exports = router;

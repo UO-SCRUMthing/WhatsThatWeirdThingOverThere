@@ -42,48 +42,57 @@ function saveImage(img, outputName) {
     return imageDirectory + outputName + extension;
 }
 
-module.exports.getWisps = function (db, deltatime) {
+module.exports.getWisps = function (db, deltatime, res) {
+    // passing in res to fix async call issue, there are better ways to do this.
     var collection = db.get('whatsThatWeirdThing');
 
     collection.find({"creation_date": {"$gte": deltatime}}, {}, function(error, docs) {
         if (error) {
-            return {status: 500, wisps: []};
+            // return {status: 500, wisps: []};
+            res.status(500).json();
         } else {
             var wispLocations = [];
             for (var i = 0; i < docs.length; i++) {
                 wispLocations[i] = {"id": docs[i].id, "title": docs[i].title, "loc": docs[i].loc};
             }
-            return {status: 200, wisps: wispLocations};
+            // return {status: 200, wisps: wispLocations};
+            res.status(200).json(wispLocations);
         }
     }); 
 }
 
-module.exports.wispsByEmail = function (db, email) {
+module.exports.wispsByEmail = function (db, email, res) {
+    // passing in res to fix async call issue, there are better ways to do this.
     var collection = db.get('whatsThatWeirdThing');
     collection.find({"email": email},{}, function(error, docs) {
         if (error) {
-            return {status: 500, wisps: []};
+            // return {status: 500, wisps: []};
+            res.status(500).json(); 
         } else {
             if (docs != null) {
                 var wispsEmails = [];
                 for (var i = 0; i < docs.length; i++) {
                     wispsEmails[i] = {"id": docs[i].id, "title": docs[i].title, "loc": docs[i].loc};
                 }
-                return {status: 200, wisps: wispsEmails};
+                // return {status: 200, wisps: wispsEmails};
+                res.status(200).json(wispsEmails);
             } else {
-                return {status: 404, wisps: []};
+                // return {status: 404, wisps: []};
+                res.status(404).json();
             }
         }
     });
 }
 
-module.exports.wispById = function (db, id) {
+module.exports.wispById = function (db, id, res) {
+    // passing in res to fix async call issue, there are better ways to do this.
     var collection = db.get('whatsThatWeirdThing');
     var regFileExtension = /.+\.(\w{3,4})/;
 
     collection.findOne({"id": id},{}, function(error, doc) {
         if (error) {
-            return {status: 500, wisps: {}};
+            // return {status: 500, wisps: {}};
+            res.status(500).json(); 
         } else {
             if (doc != null) {
                 delete doc._id
@@ -93,22 +102,29 @@ module.exports.wispById = function (db, id) {
                         doc.photos[i] = "data:image/" + fileExtension + ";base64," + fs.readFileSync(doc.photos[i], 'base64');
                     }
                 }
-                return {status: 200, wisp: doc};
+                // return {status: 200, wisp: doc};
+                res.status(200).json(doc);
             } else {
-                return {status: 404, wisp: {}};
+                // return {status: 404, wisp: {}};
+                res.status(404).json();
             }
         }
     });
 }
 
-module.exports.createWisp = function (db, body) {
+module.exports.createWisp = function (db, body, res) {
+    // passing in res to fix async call issue, there are better ways to do this.
     var collection = db.get('whatsThatWeirdThing');
     var regEmail = /\w+@\w+\.\w+/;
 
     if ((!body.title && !body.description) || !body.email || body.lon == null || body.lat == null) {
-        return {status: 400, wisp: {}};
+        // return {status: 400, wisp: {}};
+        res.status(400).json();
+        return;
     } else if (body.title.length > 160 || body.description.length > 2000 || !regEmail.test()) {
-        return {status: 400, wisp: {}};
+        // return {status: 400, wisp: {}};
+        res.status(400).json();
+        return;
     }
 
     var id = uuidv4();
@@ -122,21 +138,28 @@ module.exports.createWisp = function (db, body) {
 
     collection.insert(new_wisp, function (error, doc) {
         if (error) {
-            return {status: 500, wisp: {}};
+            // return {status: 500, wisp: {}};
+            res.status(500).json();
         } else {
-            return {status: 200, wisp: new_wisp};
+            // return {status: 200, wisp: new_wisp};
+            res.status(200).json(new_wisp);
         }
     });
 }
 
-module.exports.respondToWisp = function (db, body) {
+module.exports.respondToWisp = function (db, body, res) {
+    // passing in res to fix async call issue, there are better ways to do this.
     var collection = db.get('whatsThatWeirdThing');
     var id = params.id;
 
     if (!body.message) {
-        return {status: 400, wisp: {}};
+        // return {status: 400, wisp: {}};
+        res.status(400).json();
+        return;
     } else if (body.message > 1500 || body.message < 10) {
-        return {status: 400, wisp: {}};
+        // return {status: 400, wisp: {}};
+        res.status(400).json();
+        return;
     }
 
     collection.findOne({"id": id},{}, function(error, doc) {
@@ -161,18 +184,21 @@ module.exports.respondToWisp = function (db, body) {
             doc.responses.push(body.message);
             collection.update({"id": doc.id}, {$set: {"responses": doc.responses}}, function(error, count, status) {
                 if (error) {
-                    return {status: 500, wisp: {}};
+                    // return {status: 500, wisp: {}};
+                    res.status(500).json();
                 } else {
                     // console.log("WISP " + doc.id + "responsed to! " + count + " " + status);
                     delete doc._id; 
-                    return {status: 200, wisp: doc};
+                    // return {status: 200, wisp: doc};
+                    res.status(200).json(doc);
                 }
             });
         }
     });
 }
 
-module.exports.deleteWisp = function (db, id) {
+module.exports.deleteWisp = function (db, id, res) {
+    // passing in res to fix async call issue, there are better ways to do this.
     var collection = db.get('whatsThatWeirdThing');
 
     collection.remove({"id": id}, function(error, doc) {
