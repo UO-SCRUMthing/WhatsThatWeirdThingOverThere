@@ -44,6 +44,7 @@ function saveImage(img, outputName) {
         console.log("Saved!");
     });
     return imageDirectory + outputName + extension;
+}
 
 function getWisps(db, deltatime) {
     var collection = db.get('whatsThatWeirdThing');
