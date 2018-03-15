@@ -140,9 +140,10 @@
             ui.map.addListener('dblclick', function(e){
                 
                 var m = addMarker(ui.map, e.latLng);  
-                clearNewWISP();
+                
                 focusMarker(m);
                 showWISPtemplate(m);
+                clearNewWISP();
 
                 m.addListener('click', createMarkerListener(m));
             });
@@ -233,10 +234,11 @@
         }
         
         function clearNewWISP(){
+            document.getElementById("img-file").value = "";
             ui.newWisp = {
                 title: "",
                 description: "",
-                photos: [],
+                image: null,
                 email: ui.saveEmail ? ui.newWisp.email : ""
             }
             $scope.$digest();
