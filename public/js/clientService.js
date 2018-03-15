@@ -12,7 +12,6 @@ function clientService($http){
     }
     
     clientService.addResponse = function(id, msg){
-        console.log(msg);
         return $http.post("/api/wisp/" + id, {message: msg})
 
     }

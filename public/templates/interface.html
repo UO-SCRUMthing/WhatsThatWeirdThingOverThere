@@ -1,38 +1,38 @@
 <div id="toolbar" >
-<button ng-click="ctrl.print(exp)">parse</button>
-<input type="text" ng-model="exp">
-
-<button ng-click="ctrl.filterWISPs(filter); ctrl.filter=true" style="float:right">Search</button>
-<input type="text" ng-model="filter" style="float:right" placeholder="Search by email">
-<button ng-if="ctrl.filter" ng-click="ctrl.clearFilter(); ctrl.filter=false;" style="float:right">Clear filter</button>
+<img src="images/title.png" style="display:inline-block"/>
+<button ng-click="ctrl.filterWISPs(filter); ctrl.filter=true" style="float:right"><span id="email-search-btn">Search</span></button>
+<input type="text" ng-model="filter" style="float:right" placeholder="Search by email" id="email-search"/>
+<button  ng-if="ctrl.filter" ng-click="ctrl.clearFilter(); ctrl.filter=false;" style="float:right"><span id="email-search-btn">Show all WISPs</span></button>
 
 </div>
 <div id="map-panel"></div>
 
 <div id="wisp-template" style="display:none">
-<label>Title: </label> <input type="text" ng-model="ctrl.newWisp.title"> <br>
-<label>Description:</label><br>
-<textarea ng-model="ctrl.newWisp.description" style="resize:none"></textarea><br>
-<label>Select a photo:</label><br>
-<input type="file" ng-model="ctrl.newWisp.img" id="img-file"><br>
-<label>Email: </label> <input type="text" ng-model="ctrl.newWisp.email"> <br>
-<input type="checkbox" ng-model="ctrl.saveEmail"><label>Remember email</label><br>
-<button ng-click="ctrl.createWISP()">Create</button> 
+<label class="wisp-label">Title </label><br>
+<input class="wisp-input-field" type="text" ng-model="ctrl.newWisp.title" maxlength="160"> <br>
+<label class="wisp-label">Description</label><br>
+<textarea class="wisp-input-field" ng-model="ctrl.newWisp.description" style="resize:none" maxlength="2000"></textarea><br>
+<label class="wisp-label">Email </label><br>
+<input type="text" ng-model="ctrl.newWisp.email">
+<input type="checkbox" ng-model="ctrl.saveEmail"><label>Remember email</label><br><br>
+<label class="wisp-label">Select a photo</label><br>
+<input type="file" fileread="ctrl.newWisp.image" id="img-file"><br>
+<br>
+<button class="create-wisp-btn" ng-click="ctrl.createWISP()">Create</button> 
 </div>
 
 <div id="wisp-display" style="display:none">
 <label class="wisp-title">{{ctrl.displayWISP.title}}</label>
-<button ng-if="ctrl.displayWISP.email == ctrl.email" class="delete-wisp-btn" ng-click="ctrl.deleteWISP()" style="float:right">Delete</button><br>
-<span class="wisp-description">{{ctrl.displayWISP.description}}</span><br>
-<img src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUA
-AAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO
-    9TXL0Y4OHwAAAABJRU5ErkJggg==" class="wisp-img"><br>
-<label>Responses</label><br>
+<button ng-if="ctrl.email && ctrl.displayWISP.email == ctrl.email" class="delete-wisp-btn" ng-click="ctrl.deleteWISP()" style="float:right">Delete</button><br>
+<img ng-show="ctrl.displayWISP.photo" ng-src={{ctrl.displayWISP.photo}} style="max-width:300px" class="wisp-img"><br>
+<span class="wisp-description">{{ctrl.displayWISP.description}}</span><br><br>
+
+<label class="wisp-label" ng-if="ctrl.displayWISP.responses.length > 0">Responses</label><br>
 <ul class="wisp-response-list">
     <li class="wisp-response" ng-repeat="r in ctrl.displayWISP.responses track by $index"><p>{{r}}</p></li>
 </ul>
 <div ng-if="ctrl.response.showBox">
-    <textarea class="response-box" ng-model="ctrl.response.responseText"></textarea><br>
+    <textarea class="response-box" ng-model="ctrl.response.responseText" maxlength="1500"></textarea><br>
     <button ng-click="ctrl.submitResponse(); ctrl.response.showBow = false;">Submit</button>
     <button ng-click="ctrl.response.showBox = false; ctrl.response.responseText = '';">Cancel</button>
 </div>

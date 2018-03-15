@@ -98,7 +98,7 @@ module.exports.wispById = function (db, id, res) {
                 delete doc._id
                 if (doc.photos[0]) {
                     for (var i = 0; i < doc.photos.length; i++) {
-                        var fileExtension = regFileExtension.exec(doc.photos[i]);
+                        var fileExtension = regFileExtension.exec(doc.photos[i])[1];
                         doc.photos[i] = "data:image/" + fileExtension + ";base64," + fs.readFileSync(doc.photos[i], 'base64');
                     }
                 }
@@ -121,7 +121,7 @@ module.exports.createWisp = function (db, body, res) {
         // return {status: 400, wisp: {}};
         res.status(400).json();
         return;
-    } else if (body.title.length > 160 || body.description.length > 2000 || !regEmail.test()) {
+    } else if (body.title.length > 160 || body.description.length > 2000 || !regEmail.test(body.email)) {
         // return {status: 400, wisp: {}};
         res.status(400).json();
         return;
@@ -147,10 +147,9 @@ module.exports.createWisp = function (db, body, res) {
     });
 }
 
-module.exports.respondToWisp = function (db, body, res) {
+module.exports.respondToWisp = function (db, body, id, res) {
     // passing in res to fix async call issue, there are better ways to do this.
     var collection = db.get('whatsThatWeirdThing');
-    var id = params.id;
 
     if (!body.message) {
         // return {status: 400, wisp: {}};

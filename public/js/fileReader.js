@@ -1,107 +1,25 @@
-(function (module) {
-
-     
-
-    var fileReader = function ($q, $log) {
-
- 
-
-        var onLoad = function(reader, deferred, scope) {
-
-            return function () {
-
-                scope.$apply(function () {
-
-                    deferred.resolve(reader.result);
-
-                });
-
-            };
-
-        };
-
- 
-
-        var onError = function (reader, deferred, scope) {
-
-            return function () {
-
-                scope.$apply(function () {
-
-                    deferred.reject(reader.result);
-
-                });
-
-            };
-
-        };
-
- 
-
-        var onProgress = function(reader, scope) {
-
-            return function (event) {
-
-                scope.$broadcast("fileProgress",
-
-                    {
-
-                        total: event.total,
-
-                        loaded: event.loaded
-
+(function(){
+function fileReader(){
+    return {
+        scope: {
+            fileread: "="
+        },
+        link: function (scope, element, attributes) {
+            element.bind("change", function (changeEvent) {
+                var reader = new FileReader();
+                reader.onload = function (loadEvent) {
+                    console.log(loadEvent);
+                    scope.$apply(function () {
+                        scope.fileread = loadEvent.target.result;
                     });
+                }
+                reader.readAsDataURL(changeEvent.target.files[0]);
+                scope.$on('$destroy', function(){ element.unbind("change"); });
+            });
+        }
+    }
+}
 
-            };
-
-        };
-
- 
-
-        var getReader = function(deferred, scope) {
-
-            var reader = new FileReader();
-
-            reader.onload = onLoad(reader, deferred, scope);
-
-            reader.onerror = onError(reader, deferred, scope);
-
-            reader.onprogress = onProgress(reader, scope);
-
-            return reader;
-
-        };
-
- 
-
-        var readAsDataURL = function (file, scope) {
-
-            var deferred = $q.defer();
-
-             
-
-            var reader = getReader(deferred, scope);         
-
-            reader.readAsDataURL(file);
-
-             
-
-            return deferred.promise;
-
-        };
-
-        return {
-
-            readAsDataUrl: readAsDataURL  
-
-        };
-
-    };
-
-    module.factory("fileReader",
-
-                   ["$q", "$log", fileReader]);
-
- 
-
-}(angular.module("WTApp")));
+angular.module("WTApp")
+.directive("fileread", fileReader); 
+})();

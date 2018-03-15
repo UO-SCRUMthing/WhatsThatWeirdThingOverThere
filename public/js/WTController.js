@@ -9,15 +9,14 @@
         ui.newWisp = {
             title: "",
             description: "",
-            photos: [],
-            img: null,
+            image: null,
             email: "",
         }
         
         ui.displayWISP = {
             title: "",
             description: "",
-            photos: [],
+            photo: "",
             responses: [],
             timestamp: null,
             email: "",
@@ -52,11 +51,13 @@
             var wisp = JSON.parse(JSON.stringify(ui.newWisp));
             wisp.lat = pos.lat();
             wisp.lon = pos.lng();
-            if(ui.saveEmail){
-                ui.email=wisp.email;
-            }else{
-                ui.email="";
+            
+            if(!wisp.email){
+                alert("Please enter an email address");
+                return;
             }
+            
+            wisp.email = wisp.email.toLowerCase();
             
             var promise = clientService.createWISP(wisp);
             promise.then(function(response){
@@ -77,8 +78,8 @@
         }
         
         ui.filterWISPs = function(email){
-            addr = email ? email : ui.email;
-            var promise = clientService.pollWISPs(dt = null, email = addr);
+            ui.email = email.toLowerCase();
+            var promise = clientService.pollWISPs(dt = null, email = ui.email);
             
             promise.then(function(response){
                 console.log(response.data);
@@ -95,12 +96,15 @@
         }
         
         ui.clearFilter = function(){
+            ui.email = "";
             Object.values(ui.allMarkers).map(x => x.setMap(ui.map));
             ui.displayMarkers = [];
         }
         
         ui.submitResponse = function(){
-            console.log(ui.response.responseText);
+            if(ui.response.responseText.length < 10){
+                alert("Responses must be at least 10 characters long")
+            }
             var promise = clientService.addResponse(ui.activeMarker.id, ui.response.responseText);
             promise.then(function(response){
                 setDisplay(response.data);
@@ -166,7 +170,8 @@
         function addMarker(map, loc){
             var marker = new google.maps.Marker({
                 map: map,
-                position: loc
+                position: loc,
+                icon: "images/marker-icon.png"
             });
             return marker;
         }
@@ -199,6 +204,7 @@
             ui.infoWindow.setContent(ui.WISPdisplay);
             ui.infoWindow.open(m.getMap(), m);
             ui.WISPdisplay.style = "display:block";
+
         }
         
         function showWISPtemplate(m){
@@ -216,19 +222,22 @@
         function setDisplay(wisp){
             ui.displayWISP.title = wisp.title;
             ui.displayWISP.description = wisp.description;
-            ui.displayWISP.photos = wisp.photos;
+            console.log(wisp.photos[0] ? "yes" : "no");
+            ui.displayWISP.photo = /*"data:image/png;base64," + */wisp.photos[0] ? wisp.photos[0] : "";
             ui.displayWISP.responses = wisp.responses;
             ui.displayWISP.email = wisp.email;
             ui.displayWISP.loc = wisp.loc;
+            
+            date = new Date(wisp.ts);
             ui.displayWISP.timestamp = wisp.ts;
         }
         
         function clearNewWISP(){
-            ui.newWISP = {
+            ui.newWisp = {
                 title: "",
                 description: "",
                 photos: [],
-                email: ui.saveEmail ? ui.email : ""
+                email: ui.saveEmail ? ui.newWisp.email : ""
             }
         }
         
@@ -237,6 +246,7 @@
                 focusMarker(m);
                 var promise = clientService.getWISP(m.id);
                 promise.then(function(response){
+                    console.log(response.data);
                     setDisplay(response.data);
                     displayWISP(response.data);
                 }, warn);
@@ -267,6 +277,9 @@
 
         ui.print = function(txt){
             //arr = ["y"]
+            //console.log(ui.newWisp.img);
+            console.log(ui.displayWISP);
+            /*
             var reader = new FileReader();
             var file = document.getElementById("img-file").files[0]
             reader.addEventListener('load', function(){
@@ -274,7 +287,7 @@
             });
             reader.readAsDataURL(file);
             //console.log(reader.result);
-            /*
+            
             console.log(txt);
             re = /\/(\w+);/;
             match = re.exec(txt);

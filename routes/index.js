@@ -48,7 +48,7 @@ router.post('/api/wisps', function(req, res) {
 
 // Route: Respond to a wisp
 router.post('/api/wisp/:id', function(req, res) {
-    var response = dbm.respondToWisp(req.db, req.body, res);
+    var response = dbm.respondToWisp(req.db, req.body, req.params.id, res);
     // res.status(response.status).json(response.wisp);
 });
 
