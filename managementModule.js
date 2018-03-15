@@ -12,8 +12,9 @@ const transporter = nodemailer.createTransport({
     auth: {
         user: credentials.GMAIL_ACCOUNT,
         pass: credentials.GMAIL_PASSWORD
-    }
+    },
 });
+    // tls: { rejectUnauthorized: false }
 
 const mailOptions = {
     from: credentials.GMAIL_ACCOUNT,
@@ -170,7 +171,7 @@ module.exports.respondToWisp = function (db, body, id, res) {
         // return {status: 400, wisp: {}};
         res.status(400).json();
         return;
-    } else if (body.message > 1500 || body.message < 10) {
+    } else if (body.message.length > 1500 || body.message.length < 10) {
         // return {status: 400, wisp: {}};
         res.status(400).json();
         return;
@@ -188,6 +189,7 @@ module.exports.respondToWisp = function (db, body, id, res) {
                     transporter.sendMail(mailOptions, function(error, info) {
                         if (error) {
                             console.log(error);
+                            console.log(info);
                         } else {
                             console.log('Email sent: ' + info.response);
                         }
