@@ -247,6 +247,7 @@
                 focusMarker(m);
                 var promise = clientService.getWISP(m.id);
                 promise.then(function(response){
+                    console.log(response.data);
                     setDisplay(response.data);
                     displayWISP(response.data);
                 }, function(response){

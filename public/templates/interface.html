@@ -23,7 +23,7 @@
 
 <div id="wisp-display" style="display:none">
 <label class="wisp-title">{{ctrl.displayWISP.title}}</label>
-<button ng-if="ctrl.email && ctrl.displayWISP.email == ctrl.email" class="delete-wisp-btn" ng-click="ctrl.deleteWISP()" style="float:right">Delete</button><br>
+<button ng-if="ctrl.email && ctrl.displayWISP.email == ctrl.email && ctrl.displayWISP.responses.length == 0" class="delete-wisp-btn" ng-click="ctrl.deleteWISP()" style="float:right">Delete</button><br>
 <img ng-show="ctrl.displayWISP.photo" ng-src={{ctrl.displayWISP.photo}} style="max-width:300px" class="wisp-img"><br>
 <span class="wisp-description">{{ctrl.displayWISP.description}}</span><br><br>
 
