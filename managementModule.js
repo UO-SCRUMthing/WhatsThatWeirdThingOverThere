@@ -182,9 +182,9 @@ module.exports.respondToWisp = function (db, body, id, res) {
             return {status: 500, wisp: {}};
         } else {
             if (doc.responses.length == 0) {
-                mailOptions.text = "Greetings User,\nSomeone has responded to your request for information about " + doc.title + ". Go to your list of WISPs in What's That to see the response.\n-The What's That Team";
+                mailOptions.text = "Greetings User,\nSomeone has responded to your request for information about '" + doc.title + "'. Go to your list of WISPs in What's That to see the response.\n-The What's That Team";
                 mailOptions.to = doc.email;
-                mailOptions.subject = "Your pin " + doc.title + " was just responded to for the first time!";
+                mailOptions.subject = "Your pin '" + doc.title + "' was just responded to for the first time!";
                 if (mailOptions.to && mailOptions.text) {
                     transporter.sendMail(mailOptions, function(error, info) {
                         if (error) {
