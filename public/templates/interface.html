@@ -33,7 +33,7 @@
 </ul>
 <div ng-if="ctrl.response.showBox">
     <textarea class="response-box" ng-model="ctrl.response.responseText" maxlength="1500"></textarea><br>
-    <button ng-click="ctrl.submitResponse(); ctrl.response.showBow = false;">Submit</button>
+    <button ng-click="ctrl.submitResponse(); ctrl.response.showBow = false; ctrl.response.responseText = '';">Submit</button>
     <button ng-click="ctrl.response.showBox = false; ctrl.response.responseText = '';">Cancel</button>
 </div>
 <button ng-if="!ctrl.response.showBox" ng-click="ctrl.response.showBox = true">Add response</button>

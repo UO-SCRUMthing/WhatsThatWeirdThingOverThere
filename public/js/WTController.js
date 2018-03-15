@@ -103,7 +103,8 @@
         
         ui.submitResponse = function(){
             if(ui.response.responseText.length < 10){
-                alert("Responses must be at least 10 characters long")
+                alert("Responses must be at least 10 characters long");
+                return;
             }
             var promise = clientService.addResponse(ui.activeMarker.id, ui.response.responseText);
             promise.then(function(response){
@@ -238,6 +239,7 @@
                 photos: [],
                 email: ui.saveEmail ? ui.newWisp.email : ""
             }
+            $scope.$digest();
         }
         
         function createMarkerListener(m){
