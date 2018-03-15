@@ -189,7 +189,7 @@ module.exports.respondToWisp = function (db, body, id, res) {
                         if (error) {
                             console.log(error);
                         } else {
-                            // console.log('Email sent: ' + info.response);
+                            console.log('Email sent: ' + info.response);
                         }
                     });
                 }
