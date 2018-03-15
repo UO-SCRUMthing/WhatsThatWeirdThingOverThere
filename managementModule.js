@@ -142,6 +142,7 @@ module.exports.createWisp = function (db, body, res) {
             res.status(500).json();
         } else {
             // return {status: 200, wisp: new_wisp};
+            new_wisp.photos[0] = body.image;
             res.status(200).json(new_wisp);
         }
     });
