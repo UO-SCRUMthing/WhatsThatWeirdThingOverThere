@@ -1,6 +1,6 @@
 <div id="toolbar" >
 <img src="images/title.png" style="display:inline-block"/>
-<button ng-click="ctrl.filterWISPs(filter); ctrl.filter=true" style="float:right"><span id="email-search-btn">Search</span></button>
+<button ng-click="ctrl.filterWISPs(filter); ctrl.filter=true" style="float:right"><span id="email-search-btn">Find my WISPs</span></button>
 <input type="text" ng-model="filter" style="float:right" placeholder="Search by email" id="email-search"/>
 <button  ng-if="ctrl.filter" ng-click="ctrl.clearFilter(); ctrl.filter=false;" style="float:right"><span id="email-search-btn">Show all WISPs</span></button>
 

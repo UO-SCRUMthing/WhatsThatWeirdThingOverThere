@@ -222,7 +222,6 @@
         function setDisplay(wisp){
             ui.displayWISP.title = wisp.title;
             ui.displayWISP.description = wisp.description;
-            console.log(wisp.photos[0] ? "yes" : "no");
             ui.displayWISP.photo = /*"data:image/png;base64," + */wisp.photos[0] ? wisp.photos[0] : "";
             ui.displayWISP.responses = wisp.responses;
             ui.displayWISP.email = wisp.email;
@@ -246,10 +245,17 @@
                 focusMarker(m);
                 var promise = clientService.getWISP(m.id);
                 promise.then(function(response){
-                    console.log(response.data);
                     setDisplay(response.data);
                     displayWISP(response.data);
-                }, warn);
+                }, function(response){
+                    if(response.status == 404){
+                        splitUrl = response.config.url.split("/");
+                        id = splitUrl[splitUrl.length - 1];
+                        if(ui.allMarkers[id]){
+                            deleteMarker(ui.allMarkers[id]);
+                        }
+                    }
+                });
             }
         }
         
