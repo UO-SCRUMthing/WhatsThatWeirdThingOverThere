@@ -99,7 +99,15 @@ module.exports.wispById = function (db, id, res) {
                 if (doc.photos[0]) {
                     for (var i = 0; i < doc.photos.length; i++) {
                         var fileExtension = regFileExtension.exec(doc.photos[i])[1];
-                        doc.photos[i] = "data:image/" + fileExtension + ";base64," + fs.readFileSync(doc.photos[i], 'base64');
+                        try {
+                            doc.photos[i] = "data:image/" + fileExtension + ";base64," + fs.readFileSync(doc.photos[i], 'base64');
+                        } catch (error) {
+                            if (error.code === 'ENOENT') {
+                                console.log("File not found!");
+                            } else {
+                                throw error;
+                            }
+                        }
                     }
                 }
                 // return {status: 200, wisp: doc};
