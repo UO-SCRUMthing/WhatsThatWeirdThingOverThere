@@ -42,8 +42,15 @@ function saveImage(img, outputName) {
     return imageDirectory + outputName + extension;
 }
 
+function readBase64Image(filePath) {
+    var regFileExtension = /.+\.(\w{3,4})/;
+    var fileExtension = regFileExtension.exec(filePath)[1];
+
+    return "data:image/" + fileExtension + ";base64," + fs.readFileSync(filePath, 'base64');
+}
+
 module.exports.getWisps = function (db, deltatime, res) {
-    // passing in res to fix async call issue, there are better ways to do this.
+    // passing in res to fix async call issue, there are better ways to do this, but I do not have the time currently to figure them out.
     var collection = db.get('whatsThatWeirdThing');
 
     collection.find({"creation_date": {"$gte": deltatime}}, {}, function(error, docs) {
@@ -62,7 +69,7 @@ module.exports.getWisps = function (db, deltatime, res) {
 }
 
 module.exports.wispsByEmail = function (db, email, res) {
-    // passing in res to fix async call issue, there are better ways to do this.
+    // passing in res to fix async call issue, there are better ways to do this, but I do not have the time currently to figure them out.
     var collection = db.get('whatsThatWeirdThing');
     collection.find({"email": email},{}, function(error, docs) {
         if (error) {
@@ -85,9 +92,8 @@ module.exports.wispsByEmail = function (db, email, res) {
 }
 
 module.exports.wispById = function (db, id, res) {
-    // passing in res to fix async call issue, there are better ways to do this.
+    // passing in res to fix async call issue, there are better ways to do this, but I do not have the time currently to figure them out.
     var collection = db.get('whatsThatWeirdThing');
-    var regFileExtension = /.+\.(\w{3,4})/;
 
     collection.findOne({"id": id},{}, function(error, doc) {
         if (error) {
@@ -98,9 +104,9 @@ module.exports.wispById = function (db, id, res) {
                 delete doc._id
                 if (doc.photos[0]) {
                     for (var i = 0; i < doc.photos.length; i++) {
-                        var fileExtension = regFileExtension.exec(doc.photos[i])[1];
                         try {
-                            doc.photos[i] = "data:image/" + fileExtension + ";base64," + fs.readFileSync(doc.photos[i], 'base64');
+                            doc.photos[i] = readBase64Image(doc.photos[i]);
+                            // console.log(doc.photos[i]);
                         } catch (error) {
                             if (error.code === 'ENOENT') {
                                 console.log("File not found!");
@@ -121,7 +127,7 @@ module.exports.wispById = function (db, id, res) {
 }
 
 module.exports.createWisp = function (db, body, res) {
-    // passing in res to fix async call issue, there are better ways to do this.
+    // passing in res to fix async call issue, there are better ways to do this, but I do not have the time currently to figure them out.
     var collection = db.get('whatsThatWeirdThing');
     var regEmail = /\w+@\w+\.\w+/;
 
@@ -157,7 +163,7 @@ module.exports.createWisp = function (db, body, res) {
 }
 
 module.exports.respondToWisp = function (db, body, id, res) {
-    // passing in res to fix async call issue, there are better ways to do this.
+    // passing in res to fix async call issue, there are better ways to do this, but I do not have the time currently to figure them out.
     var collection = db.get('whatsThatWeirdThing');
 
     if (!body.message) {
@@ -197,6 +203,20 @@ module.exports.respondToWisp = function (db, body, id, res) {
                 } else {
                     // console.log("WISP " + doc.id + "responsed to! " + count + " " + status);
                     delete doc._id; 
+                    if (doc.photos[0]) {
+                        for (var i = 0; i < doc.photos.length; i++) {
+                            try {
+                                doc.photos[i] = readBase64Image(doc.photos[i]);
+                                // console.log(doc.photos[i]);
+                            } catch (error) {
+                                if (error.code === 'ENOENT') {
+                                    console.log("File not found!");
+                                } else {
+                                    throw error;
+                                }
+                            }
+                        }
+                    }
                     // return {status: 200, wisp: doc};
                     res.status(200).json(doc);
                 }
@@ -206,10 +226,10 @@ module.exports.respondToWisp = function (db, body, id, res) {
 }
 
 module.exports.deleteWisp = function (db, id, res) {
-    // passing in res to fix async call issue, there are better ways to do this.
+    // passing in res to fix async call issue, there are better ways to do this, but I do not have the time currently to figure them out.
     var collection = db.get('whatsThatWeirdThing');
 
-    collection.remove({"id": id}, function(error, doc) {
+    collection.remove({"$and": [{"id": id}, {"responses": []}]}, {}, function(error, doc) {
         if (error) {
             res.status(500).json();
         } else {
