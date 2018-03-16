@@ -1,0 +1,738 @@
+{
+	"info": {
+		"name": "L2 Unit Tests",
+		"_postman_id": "0fab9faf-b4c2-4b1d-96c6-ec07c9d80915",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Wisps",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "c7ec4a25-8b96-43de-a036-4f4b79ceb7a8",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"JSON Format Test\", function () {",
+							"    var jsonData = null;",
+							"    try{",
+							"        jsonData = pm.response.json();",
+							"    } catch(e) {",
+							"        jsonData = null;",
+							"    }",
+							"    ",
+							"    pm.expect(jsonData[1]).to.exist;",
+							"",
+							"    // Test against the second wisp in the list",
+							"    pm.environment.set(\"$testwisp_id\", jsonData[1].id);",
+							"    pm.environment.set(\"$testwisp\", jsonData[1]);",
+							"    ",
+							"    // Record number of wisps",
+							"    pm.environment.set(\"number_of_wisps\", jsonData.length);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://ec2-54-203-112-255.us-west-2.compute.amazonaws.com/api/wisps",
+					"protocol": "http",
+					"host": [
+						"ec2-54-203-112-255",
+						"us-west-2",
+						"compute",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"api",
+						"wisps"
+					]
+				},
+				"description": null
+			},
+			"response": []
+		},
+		{
+			"name": "Get Wisps (Location based)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "fffb4f49-db6b-4fe8-8181-0f4220cd6046",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"[Prototype Requirement] Not Crash\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://ec2-54-203-112-255.us-west-2.compute.amazonaws.com/api/wisps?d=10.00&lon=100.00&lat=100.00",
+					"protocol": "http",
+					"host": [
+						"ec2-54-203-112-255",
+						"us-west-2",
+						"compute",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"api",
+						"wisps"
+					],
+					"query": [
+						{
+							"key": "d",
+							"value": "10.00",
+							"equals": true
+						},
+						{
+							"key": "lon",
+							"value": "100.00",
+							"equals": true
+						},
+						{
+							"key": "lat",
+							"value": "100.00",
+							"equals": true
+						}
+					]
+				},
+				"description": null
+			},
+			"response": []
+		},
+		{
+			"name": "Get a Wisp",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "54f06de1-2915-466e-b2c6-fb1a92ebd140",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status Code Test (Expect 200)\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"JSON Format Test\", function () {",
+							"    var jsonData = null;",
+							"    try{",
+							"        jsonData = pm.response.json();",
+							"    } catch(e) {",
+							"        jsonData = null;",
+							"    }",
+							"    ",
+							"    pm.expect(jsonData).to.exist;",
+							"});",
+							"",
+							"pm.test(\"Data Consistency Test\", function () {",
+							"    var jsonData = null;",
+							"    try{",
+							"        jsonData = pm.response.json();",
+							"    } catch(e) {",
+							"        jsonData = null;",
+							"    }",
+							"    ",
+							"    pm.expect(jsonData).to.exist;",
+							"    ",
+							"    var source = pm.environment.get(\"$testwisp\");",
+							"    pm.expect(jsonData.id).to.eql(source.id);",
+							"    pm.expect(jsonData.title).to.eql(source.title);",
+							"    pm.expect(jsonData.loc.lon).to.eql(source.loc.lon);",
+							"    pm.expect(jsonData.loc.lat).to.eql(source.loc.lat);",
+							"});",
+							"",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://ec2-54-203-112-255.us-west-2.compute.amazonaws.com/api/wisp/{{$testwisp_id}}",
+					"protocol": "http",
+					"host": [
+						"ec2-54-203-112-255",
+						"us-west-2",
+						"compute",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"api",
+						"wisp",
+						"{{$testwisp_id}}"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get a Non-existing Wisp",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "5f7c3d1b-3913-439b-9f7e-8ba2821d15d2",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status Code Test (Expect 404)\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://ec2-54-203-112-255.us-west-2.compute.amazonaws.com/api/wisp/not{{$testwisp_id}}",
+					"protocol": "http",
+					"host": [
+						"ec2-54-203-112-255",
+						"us-west-2",
+						"compute",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"api",
+						"wisp",
+						"not{{$testwisp_id}}"
+					]
+				},
+				"description": null
+			},
+			"response": []
+		},
+		{
+			"name": "Create a Wisp",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "8f742737-881e-43ba-9d46-6a2e1ac7a298",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status Code Test (Expect 200)\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"JSON Format Test\", function () {",
+							"    var jsonData = null;",
+							"    try{",
+							"        jsonData = pm.response.json();",
+							"    } catch(e) {",
+							"        jsonData = null;",
+							"    }",
+							"    ",
+							"    pm.expect(jsonData).to.exist;",
+							"});",
+							"",
+							"pm.test(\"Data Test: Consistency\", function () {",
+							"    var jsonData = null;",
+							"    try{",
+							"        jsonData = pm.response.json();",
+							"    } catch(e) {",
+							"        jsonData = null;",
+							"    }",
+							"    ",
+							"    // Record number of responses (for response test)",
+							"    pm.environment.set(\"responses_length\", jsonData.responses.length);",
+							"    pm.environment.set(\"responses_test_id\", jsonData.id);",
+							"    ",
+							"    pm.expect(jsonData).to.exist;",
+							"",
+							"    pm.expect(jsonData.title).to.eql(\"L1 Test Run\");",
+							"    pm.expect(jsonData.description).to.eql(pm.environment.get(\"description\"))",
+							"    pm.expect(jsonData.loc.lon).to.eql(pm.environment.get(\"lon\"));",
+							"    pm.expect(jsonData.loc.lat).to.eql(pm.environment.get(\"lat\"));",
+							"});",
+							"",
+							"pm.test(\"Data Test: Has an ID\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.exist;",
+							"    pm.expect(jsonData.id).to.exist;",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "4cbebd17-e352-40f8-97db-8234ecc1bee3",
+						"type": "text/javascript",
+						"exec": [
+							"// Australia!",
+							"var lat = Math.random() * 26 - 38;",
+							"var lon = Math.random() * 36 + 114;",
+							"",
+							"pm.environment.set(\"lat\", lat);",
+							"pm.environment.set(\"lon\", lon);",
+							"",
+							"pm.environment.set(\"description\", \"This is a auto-generated wisp at \" + (new Date()).getTime());"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"L1 Test Run\",\n    \"description\": \"{{description}}\",\n    \"lon\": {{lon}},\n    \"lat\": {{lat}},\n    \"email\": \"emailthatnobodyuses@domain.com\"\n}"
+				},
+				"url": {
+					"raw": "http://ec2-54-203-112-255.us-west-2.compute.amazonaws.com/api/wisps/",
+					"protocol": "http",
+					"host": [
+						"ec2-54-203-112-255",
+						"us-west-2",
+						"compute",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"api",
+						"wisps",
+						""
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get Wisps (Wisp List Check)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "7db91173-2973-4c2a-8943-8b2c6f48c2df",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Data Test: Number of wisps +1\", function () {",
+							"    var jsonData = null;",
+							"    try{",
+							"        jsonData = pm.response.json();",
+							"    } catch(e) {",
+							"        jsonData = null;",
+							"    }",
+							"    ",
+							"    pm.expect(jsonData).to.exist;",
+							"    pm.expect(jsonData.length).to.eql(pm.environment.get(\"number_of_wisps\")+1);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://ec2-54-203-112-255.us-west-2.compute.amazonaws.com/api/wisps",
+					"protocol": "http",
+					"host": [
+						"ec2-54-203-112-255",
+						"us-west-2",
+						"compute",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"api",
+						"wisps"
+					]
+				},
+				"description": null
+			},
+			"response": []
+		},
+		{
+			"name": "Create a Wisp (Empty Body)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ceba1bed-3711-4289-baca-1b4f96c0b809",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status Code Test (Expect 400)\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "9034bd27-1257-439f-a0db-9ad647ca6721",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://ec2-54-203-112-255.us-west-2.compute.amazonaws.com/api/wisps/",
+					"protocol": "http",
+					"host": [
+						"ec2-54-203-112-255",
+						"us-west-2",
+						"compute",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"api",
+						"wisps",
+						""
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get Wisps by Email",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4d5f118b-8482-460e-912a-a6a4dd7c97fb",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"JSON Format Test\", function () {",
+							"    var jsonData = null;",
+							"    try{",
+							"        jsonData = pm.response.json();",
+							"    } catch(e) {",
+							"        jsonData = null;",
+							"    }",
+							"    ",
+							"    pm.expect(jsonData.length).to.eql(2);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://ec2-54-203-112-255.us-west-2.compute.amazonaws.com/api/wisps/emailthatnobodyuses@domain.com",
+					"protocol": "http",
+					"host": [
+						"ec2-54-203-112-255",
+						"us-west-2",
+						"compute",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"api",
+						"wisps",
+						"emailthatnobodyuses@domain.com"
+					]
+				},
+				"description": null
+			},
+			"response": []
+		},
+		{
+			"name": "Delete a Wisp",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b4009420-e196-47e7-a8aa-7dc94fddc191",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status Code Test (Expect 200)\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "9034bd27-1257-439f-a0db-9ad647ca6721",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://ec2-54-203-112-255.us-west-2.compute.amazonaws.com/api/wisp/{{responses_test_id}}",
+					"protocol": "http",
+					"host": [
+						"ec2-54-203-112-255",
+						"us-west-2",
+						"compute",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"api",
+						"wisp",
+						"{{responses_test_id}}"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Delete a Non-existing Wisp",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "fdca5344-27a7-4647-809c-b35eb2fe3fc6",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status Code Test (Expect 404)\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "9034bd27-1257-439f-a0db-9ad647ca6721",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://ec2-54-203-112-255.us-west-2.compute.amazonaws.com/api/wisp/nonexisting",
+					"protocol": "http",
+					"host": [
+						"ec2-54-203-112-255",
+						"us-west-2",
+						"compute",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"api",
+						"wisp",
+						"nonexisting"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Create a Wisp (Invalid Data)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ceba1bed-3711-4289-baca-1b4f96c0b809",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status Code Test (Expect 400)\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "9034bd27-1257-439f-a0db-9ad647ca6721",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "Hey, Data!"
+				},
+				"url": {
+					"raw": "http://ec2-54-203-112-255.us-west-2.compute.amazonaws.com/api/wisps/",
+					"protocol": "http",
+					"host": [
+						"ec2-54-203-112-255",
+						"us-west-2",
+						"compute",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"api",
+						"wisps",
+						""
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Create a Wisp (Missing Fields)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ceba1bed-3711-4289-baca-1b4f96c0b809",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status Code Test (Expect 400)\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "9034bd27-1257-439f-a0db-9ad647ca6721",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"title\": \"title\"\n}"
+				},
+				"url": {
+					"raw": "http://ec2-54-203-112-255.us-west-2.compute.amazonaws.com/api/wisps/",
+					"protocol": "http",
+					"host": [
+						"ec2-54-203-112-255",
+						"us-west-2",
+						"compute",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"api",
+						"wisps",
+						""
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "f4f7d5f5-ba48-4b55-baf5-f1d4f001a038",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "fec24d35-37cf-4c96-8783-3b05880d4cf8",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
