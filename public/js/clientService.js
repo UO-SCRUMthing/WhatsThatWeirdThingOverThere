@@ -5,7 +5,6 @@ function clientService($http){
     var clientService = {};
     
     clientService.createWISP = function(WISP){
-
         return $http.post("/api/wisps", WISP)
             
 
