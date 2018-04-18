@@ -20,10 +20,11 @@ router.get('/api/wisps', function(req, res) {
     var deltatime = req.query.ts ? parseInt(req.query.ts) : 0;
     console.log("deltatime " + deltatime);
 
-    var response;
-    dbm.getWisps(req.db, deltatime).then(result => response = result);
-    console.log(response);
-    res.status(response.status).json(response.wisps);    
+    const promise1 = new Promise(resolve => dbm.getWisps(resolve, req.db, deltatime));
+    promise1.then(response => res.status(response.status).json(response.wisps));
+    // new Promise(dbm.getWisps(req.db, deltatime), reject).then(result => response = result);
+    // console.log(response);
+    // res.status(response.status).json(response.wisps);    
 });
 
 // WISP template
@@ -33,37 +34,32 @@ router.get('/api/wisps', function(req, res) {
 
 // Route: get wisps by email
 router.get('/api/wisps/:email', function(req, res){
-    var response;
-    dbm.wispsByEmail(req.db, req.params.email).then(result => response = result);
-    res.status(response.status).json(response.wisps); 
+    const promise1 = new Promise(resolve => dbm.wispsByEmail(resolve, req.db, req.params.email));
+    promise1.then(response => res.status(response.status).json(response.wisps)); 
 });
 
 // Route: get wisp by id
 router.get('/api/wisp/:id', function(req, res){
-    var response;
-    dbm.wispById(req.db, req.params.id).then(result => response = result);
-    res.status(response.status).json(response.wisp); 
+    const promise1 = new Promise(resolve => dbm.wispById(resolve, req.db, req.params.id));
+    promise1.then(response => res.status(response.status).json(response.wisp)).catch(console.log("id error"));
 });
 
 // Route: Create a wisp
 router.post('/api/wisps', function(req, res) {
-    var response;
-    dbm.createWisp(req.db, req.body).then(result => response = result);
-    res.status(response.status).json(response.wisp); 
+    const promise1 = new Promise(resolve => dbm.createWisp(resolve, req.db, req.body));
+    promise1.then(response => res.status(response.status).json(response.wisp)); 
 });
 
 // Route: Respond to a wisp
 router.post('/api/wisp/:id', function(req, res) {
-    var response;
-    dbm.respondToWisp(req.db, req.body, req.params.id).then(result => response = result);
-    res.status(response.status).json(response.wisp);
+    const promise1 = new Promise(resolve => dbm.respondToWisp(resolve, req.db, req.body, req.params.id));
+    promise1.then(response => res.status(response.status).json(response.wisp));
 });
 
 // Route: Delete a wisp
 router.delete('/api/wisp/:id', function(req, res) {
-    var response;
-    dbm.deleteWisp(req.db, req.params.id).then(result => response = result);
-    res.status(response.status).json();
+    const promise1 = new Promise(resolve => dbm.deleteWisp(resolve, req.db, req.params.id));
+    promise1.then(response => res.status(response.status).json());
 });
 
 module.exports = router;
