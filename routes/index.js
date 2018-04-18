@@ -22,9 +22,6 @@ router.get('/api/wisps', function(req, res) {
 
     const promise1 = new Promise(resolve => dbm.getWisps(resolve, req.db, deltatime));
     promise1.then(response => res.status(response.status).json(response.wisps));
-    // new Promise(dbm.getWisps(req.db, deltatime), reject).then(result => response = result);
-    // console.log(response);
-    // res.status(response.status).json(response.wisps);    
 });
 
 // WISP template
