@@ -18,7 +18,6 @@ router.get('/api/wisps', function(req, res) {
     // var long = req.query.long;
     // var dist = req.query.d;
     var deltatime = req.query.ts ? parseInt(req.query.ts) : 0;
-    console.log("deltatime " + deltatime);
 
     const promise1 = new Promise(resolve => dbm.getWisps(resolve, req.db, deltatime));
     promise1.then(response => res.status(response.status).json(response.wisps));
