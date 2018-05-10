@@ -20,9 +20,9 @@ cd to the root directory of the webpage where package.json is located and run
 npm install
 ```
 
-The repo is missing the `adminSecrets.js` file with connection credentials to the mongoDB database hosted on mLab. The file also holds the credentials file for the gmail account used by `nodemailer` to send out notification emails when a WISP is first responded to. The required file has to expose variables called `MONGO_USER_NAME`, `MONGO_PASSWORD`, `GMAIL_ADDRESS`, and `GMAIL_PASSWORD`. 
+The repo is missing the `adminSecrets.js` file with connection credentials to the mongoDB database hosted on mLab. The file also holds the credentials file for the gmail account used by `nodemailer` to send out notification emails. The required file has to expose variables called `MONGO_USER_NAME`, `MONGO_PASSWORD`, `GMAIL_ADDRESS`, and `GMAIL_PASSWORD`. 
 
-__Create a file in the root directory like:__
+__Create a `adminSecrets.js` file in the root directory like:__
 ```
 exports.MONGO_USER_NAME = <username>;
 exports.MONGO_PASSWORD = <password>;
