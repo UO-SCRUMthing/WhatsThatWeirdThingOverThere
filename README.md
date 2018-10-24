@@ -34,4 +34,3 @@ The server can now be able to be run by:
 ```
 sudo PORT=80 npm start
 ```
-This will create a server listening on port 80 (the traditional HTTP port) 
